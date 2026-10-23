@@ -40,11 +40,11 @@
     assign arm_h = h10 | times: 0.64 | round
     assign leg = h10 | times: 0.12 | round
     assign inner = w10 | minus: arm | minus: arm
-    assign label = w10 | times: 0.055 | round
+    assign label = w10 | times: 0.085 | round
     assign leg_w = arm | divided_by: 3
     assign right_leg = w10 | minus: leg_w | minus: leg_w
-    assign front_vb_x = label | times: -2
-    assign front_vb_w = label | times: 5 | plus: w10
+    assign front_vb_x = label | times: -3
+    assign front_vb_w = label | times: 6 | plus: w10
     assign vb_h = label | times: 4 | plus: h10
     assign side_vb_w = label | times: 3 | plus: d10
     assign uid = block.id
@@ -235,6 +235,17 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border: var(--rule) solid var(--ink);
+  }
+
+  .dimensions__tabs [role='tab'] {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 749px) {
+    .dimensions__tabs [role='tab'] {
+      padding: 0 var(--space-1);
+      letter-spacing: 0.06em;
+    }
   }
 
   .dimensions__tabs [role='tab'] + [role='tab'] {

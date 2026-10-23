@@ -26,7 +26,8 @@
   }
 
   @media (max-width: 989px) {
-    .pdp__grid > .product-column {
+    .pdp__grid .shopify-block,
+    .pdp__grid .product-column {
       display: contents;
     }
 
@@ -59,7 +60,7 @@
     .pdp__grid {
       grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
       column-gap: var(--pdp-gap);
-      align-items: start;
+      align-items: stretch;
     }
   }
 {% endstylesheet %}

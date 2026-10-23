@@ -6,7 +6,7 @@
 {% enddoc %}
 {%- assign p = closest.product -%}
 <div data-pdp="title" {{ block.shopify_attributes }}>
-  <h1 class="product-title display">{{ p.title | escape }}</h1>
+  <h1 class="product-title display">{{ p.title | escape | replace: '-', '&#8209;' }}</h1>
   {%- if block.settings.subtitle != blank -%}
     <p class="product-title__line caption">{{ block.settings.subtitle }}</p>
   {%- endif -%}
@@ -15,7 +15,7 @@
 {% stylesheet %}
   .product-title {
     font-size: var(--text-display);
-    max-width: 8ch;
+    max-width: 9ch;
   }
 
   .product-title__line {

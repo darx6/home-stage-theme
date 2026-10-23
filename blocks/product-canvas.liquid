@@ -96,7 +96,7 @@
 
   {%- for model in models -%}
     <template data-model-template="{{ model.id }}">
-      {{ model | model_viewer_tag: camera-controls: true, interaction-prompt: 'none', shadow-intensity: '1', exposure: '0.8', tone-mapping: 'neutral', environment-image: 'neutral' }}
+      {{ model | model_viewer_tag: camera-controls: true, interaction-prompt: 'none', shadow-intensity: '1', exposure: '0.8', tone-mapping: 'neutral', environment-image: 'neutral', camera-orbit: '-28deg 78deg auto', field-of-view: '22deg' }}
     </template>
   {%- endfor -%}
 
@@ -231,7 +231,7 @@
       this.value = this.page?.variant?.options[this.optionIndex];
       this.view = 'angle';
       this.renderViews();
-      ProductCanvas.setupXR();
+      if (this.supportsAR()) ProductCanvas.setupXR();
       this.page?.addEventListener('product:variant', (e) => {
         this.value = e.detail.variant.options[this.optionIndex];
         this.field?.pulse();

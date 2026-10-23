@@ -10,6 +10,7 @@
   assign v = p.selected_or_first_available_variant
   assign sample = p.metafields.homestage.sample_product.value
   assign form_id = 'product-form-' | append: block.id
+  assign sample_price = sample.price | money
 -%}
 <buy-buttons
   data-pdp="buy" class="buy-buttons"
@@ -61,7 +62,7 @@
       }
     </script>
     <p class="buy-buttons__sample-note" data-sample-note>
-      {{ 'products.sample_note' | t: price: sample.price | money }}
+      {{ 'products.sample_note' | t: price: sample_price }}
     </p>
   {%- endif -%}
 
@@ -82,7 +83,7 @@
 
   @media (min-width: 750px) {
     .buy-buttons__row:has(.buy-buttons__sample) {
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
