@@ -94,24 +94,20 @@
 
     <div class="dimensions__panel" role="tabpanel" id="{{ uid }}-piece" aria-labelledby="{{ uid }}-tab-piece">
       {%- if outline_front and outline_side -%}
-        {%- liquid
-          assign front_ratio = outline_front.width | times: 1.0 | divided_by: outline_front.height
-          assign side_ratio = outline_side.width | times: 1.0 | divided_by: outline_side.height
-        -%}
-        <div class="dimensions__drawings dimensions__drawings--traced">
-          <figure class="dim-figure dim-figure--front" style="--grow: {{ front_ratio }};">
+        <div class="dimensions__drawings dimensions__drawings--traced" style="--w: {{ w }}; --d: {{ d }}; --h: {{ h }}; grid-template-columns: {{ w }}fr {{ d }}fr;">
+          <figure class="dim-figure dim-figure--front">
             <div class="dim-figure__art">
               <span class="dim-figure__height numerals"><span data-len="{{ h }}"></span></span>
-              <svg viewBox="0 0 {{ outline_front.width }} {{ outline_front.height }}" role="img" aria-label="{{ 'products.front_view' | t }}">
+              <svg viewBox="0 0 {{ outline_front.width }} {{ outline_front.height }}" preserveAspectRatio="none" role="img" aria-label="{{ 'products.front_view' | t }}">
                 <path d="{{ outline_front.d }}" />
               </svg>
               <span class="dim-figure__width numerals"><span data-len="{{ w }}"></span></span>
             </div>
             <figcaption class="caption">{{ 'products.front_view' | t }}</figcaption>
           </figure>
-          <figure class="dim-figure" style="--grow: {{ side_ratio }};">
+          <figure class="dim-figure dim-figure--side">
             <div class="dim-figure__art">
-              <svg viewBox="0 0 {{ outline_side.width }} {{ outline_side.height }}" role="img" aria-label="{{ 'products.side_view' | t }}">
+              <svg viewBox="0 0 {{ outline_side.width }} {{ outline_side.height }}" preserveAspectRatio="none" role="img" aria-label="{{ 'products.side_view' | t }}">
                 <path d="{{ outline_side.d }}" />
               </svg>
               <span class="dim-figure__width numerals"><span data-len="{{ d }}"></span></span>
@@ -291,13 +287,13 @@
   }
 
   .dimensions__drawings--traced {
-    display: flex;
-    align-items: flex-end;
+    display: grid;
+    align-items: end;
     gap: var(--space-5);
+    padding-inline-start: var(--space-5);
   }
 
   .dim-figure {
-    flex: var(--grow) 1 0;
     min-width: 0;
   }
 
@@ -306,15 +302,20 @@
     padding: 0 0 var(--space-6);
   }
 
-  .dim-figure--front .dim-figure__art {
-    padding-inline-start: var(--space-5);
-  }
+
 
   .dim-figure__art svg {
     display: block;
     width: 100%;
-    height: auto;
     overflow: visible;
+  }
+
+  .dim-figure--front svg {
+    aspect-ratio: calc(var(--w) / var(--h));
+  }
+
+  .dim-figure--side svg {
+    aspect-ratio: calc(var(--d) / var(--h));
   }
 
   .dim-figure__art path {
@@ -345,7 +346,7 @@
   .dim-figure__height {
     top: 0;
     bottom: var(--space-6);
-    left: 0;
+    left: calc(var(--space-5) * -1);
     width: var(--space-5);
     border-block: 1px solid var(--ink);
     background: linear-gradient(var(--ink), var(--ink)) center / 1px 100% no-repeat;
@@ -356,10 +357,6 @@
     padding: 0 var(--space-1);
     background: var(--gallery);
     white-space: nowrap;
-  }
-
-  .dim-figure--front .dim-figure__width {
-    inset-inline-start: var(--space-5);
   }
 
   .dim-figure__height span {
