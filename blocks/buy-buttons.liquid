@@ -1,0 +1,186 @@
+{% doc %}
+  Add to cart, with "Order a sample" beside it when the product links a sample product
+  whose variants are named like this product's options.
+
+  @example
+  {% content_for 'block', type: 'buy-buttons', id: 'buy' %}
+{% enddoc %}
+{%- liquid
+  assign p = closest.product
+  assign v = p.selected_or_first_available_variant
+  assign sample = p.metafields.homestage.sample_product.value
+  assign form_id = 'product-form-' | append: block.id
+-%}
+<buy-buttons
+  data-pdp="buy" class="buy-buttons"
+  data-label-add="{{ 'products.add_to_cart' | t }}"
+  data-label-sold-out="{{ 'products.sold_out' | t }}"
+  data-sample-added="{{ 'products.sample_added' | t }}"
+  data-sample-error="{{ 'products.sample_error' | t }}"
+  data-view-cart="{{ 'products.view_cart' | t }}"
+  {{ block.shopify_attributes }}
+>
+  {%- form 'product', p, id: form_id, class: 'buy-buttons__form', novalidate: 'novalidate' -%}
+    <input type="hidden" name="id" value="{{ v.id }}" data-variant-input>
+    <div class="buy-buttons__row">
+      <button
+        type="submit"
+        name="add"
+        class="button buy-buttons__add"
+        data-add
+        {% unless v.available %}
+          disabled
+        {% endunless %}
+      >
+        <span data-add-label>
+          {%- if v.available -%}
+            {{ 'products.add_to_cart' | t }}
+          {%- else -%}
+            {{ 'products.sold_out' | t }}
+          {%- endif -%}
+        </span>
+      </button>
+      {%- if sample -%}
+        <button type="button" class="button button--outline buy-buttons__sample" data-sample>
+          {{ 'products.order_sample' | t }}
+        </button>
+      {%- endif -%}
+    </div>
+    {%- if block.settings.show_dynamic_checkout -%}
+      <div class="buy-buttons__dynamic">{{ form | payment_button }}</div>
+    {%- endif -%}
+  {%- endform -%}
+
+  {%- if sample -%}
+    <script type="application/json" data-samples>
+      {
+        {%- for sv in sample.variants -%}
+          {{ sv.title | json }}: {"id": {{ sv.id }}, "available": {{ sv.available }}, "price": {{ sv.price | money | json }}}
+          {%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      }
+    </script>
+    <p class="buy-buttons__sample-note" data-sample-note>
+      {{ 'products.sample_note' | t: price: sample.price | money }}
+    </p>
+  {%- endif -%}
+
+  <p class="buy-buttons__status" role="status" aria-live="polite" data-status></p>
+</buy-buttons>
+
+{% stylesheet %}
+  .buy-buttons {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .buy-buttons__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 750px) {
+    .buy-buttons__row:has(.buy-buttons__sample) {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    }
+  }
+
+  .buy-buttons__row .button {
+    width: 100%;
+  }
+
+  .buy-buttons__dynamic {
+    margin-top: var(--space-3);
+  }
+
+  .buy-buttons__sample-note,
+  .buy-buttons__status {
+    font-size: var(--text-small);
+  }
+
+  .buy-buttons__status:empty {
+    display: none;
+  }
+
+  .buy-buttons__status a {
+    font-weight: var(--font-body--weight-bold, 700);
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class BuyButtons extends HTMLElement {
+    connectedCallback() {
+      this.page = this.closest('product-page');
+      this.input = this.querySelector('[data-variant-input]');
+      this.add = this.querySelector('[data-add]');
+      this.addLabel = this.querySelector('[data-add-label]');
+      this.status = this.querySelector('[data-status]');
+      this.sampleButton = this.querySelector('[data-sample]');
+      const samples = this.querySelector('[data-samples]');
+      this.samples = samples ? JSON.parse(samples.textContent) : {};
+      this.page?.addEventListener('product:variant', (e) => this.update(e.detail.variant));
+      this.sampleButton?.addEventListener('click', () => this.orderSample());
+    }
+
+    update(variant) {
+      this.input.value = variant.id;
+      this.add.disabled = !variant.available;
+      this.addLabel.textContent = variant.available ? this.dataset.labelAdd : this.dataset.labelSoldOut;
+      this.status.textContent = '';
+    }
+
+    sampleFor() {
+      const options = this.page?.variant?.options || [];
+      return options.map((o) => this.samples[o]).find(Boolean);
+    }
+
+    async orderSample() {
+      const sample = this.sampleFor();
+      if (!sample) return;
+      const button = this.sampleButton;
+      button.setAttribute('aria-busy', 'true');
+      button.disabled = true;
+      try {
+        const root = window.Shopify?.routes?.root || '/';
+        const res = await fetch(`${root}cart/add.js`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ items: [{ id: sample.id, quantity: 1 }] }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.description || data.message);
+        const name = data.items?.[0]?.variant_title || '';
+        this.status.innerHTML = '';
+        this.status.append(`${this.dataset.sampleAdded.replace('%s', name)} `);
+        const link = document.createElement('a');
+        link.href = `${root}cart`;
+        link.textContent = this.dataset.viewCart;
+        this.status.append(link);
+        document.dispatchEvent(new CustomEvent('cart:change'));
+      } catch (err) {
+        this.status.textContent = err.message || this.dataset.sampleError;
+      } finally {
+        button.removeAttribute('aria-busy');
+        button.disabled = false;
+      }
+    }
+  }
+
+  if (!customElements.get('buy-buttons')) customElements.define('buy-buttons', BuyButtons);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:blocks.buy_buttons",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "t:labels.show_dynamic_checkout",
+      "default": false
+    }
+  ],
+  "presets": [{ "name": "t:blocks.buy_buttons" }]
+}
+{% endschema %}

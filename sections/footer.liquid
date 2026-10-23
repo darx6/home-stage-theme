@@ -1,39 +1,78 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+<footer class="site-footer">
+  {% render 'wave-field', id: section.id, spacing: 8, amplitude: 3, wavelength: 120, class: 'site-footer__field' %}
+  <div class="site-footer__body">
+    <p class="site-footer__note">{{ 'general.concept_note' | t }}</p>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+    <nav class="site-footer__links" aria-label="{{ 'general.footer_menu' | t }}">
+      {%- for link in section.settings.menu.links -%}
+        <a class="caption" href="{{ link.url }}">{{ link.title | escape }}</a>
+      {%- endfor -%}
+    </nav>
 
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
-    {% endif %}
+    {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+      <ul class="site-footer__payment" aria-label="{{ 'general.payment_methods' | t }}">
+        {%- for type in shop.enabled_payment_types -%}
+          <li>{{ type | payment_type_svg_tag }}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <p class="site-footer__copy caption">&copy; {{ 'now' | date: '%Y' }} {{ shop.name | escape }}</p>
   </div>
 </footer>
 
 {% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
+  .site-footer {
+    margin-top: var(--space-8);
   }
-  footer a {
+
+  .site-footer__field {
+    height: 3rem;
+    border-block: var(--rule) solid var(--ink);
+  }
+
+  .site-footer__body {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--space-5) var(--space-6);
+    padding-block: var(--space-6) var(--space-7);
+  }
+
+  .site-footer__note {
+    max-width: 52ch;
+  }
+
+  .site-footer__links {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+
+  .site-footer__links a {
     text-decoration: none;
-    color: var(--color-foreground);
   }
-  footer .footer__links,
-  footer .footer__payment {
+
+  .site-footer__links a:hover {
+    text-decoration: underline;
+  }
+
+  .site-footer__payment {
     display: flex;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+  }
+
+  .site-footer__payment svg {
+    width: 2.5rem;
+    height: auto;
+  }
+
+  @media (max-width: 749px) {
+    .site-footer__body {
+      grid-template-columns: 1fr;
+    }
   }
 {% endstylesheet %}
 

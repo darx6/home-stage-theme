@@ -1,0 +1,230 @@
+{% doc %}
+  The fabric range as numbered canvases. Reads the product's linked fabric entries
+  (number, name, colour, swatch image, material, care) and matches them to the option
+  values by name. Without fabric entries it falls back to plain named options.
+
+  @example
+  {% content_for 'block', type: 'fabric-picker', id: 'fabrics' %}
+{% enddoc %}
+{%- liquid
+  assign p = closest.product
+  assign v = p.selected_or_first_available_variant
+  assign fabrics = p.metafields.homestage.fabrics.value
+  assign option = nil
+  for o in p.options_with_values
+    if o.name == block.settings.option_name
+      assign option = o
+    endif
+  endfor
+-%}
+{%- if option -%}
+  <fabric-picker
+    data-pdp="fabrics" class="fabric-picker"
+    data-option-index="{{ option.position | minus: 1 }}"
+    {{ block.shopify_attributes }}
+  >
+    <fieldset class="fabric-picker__set">
+      <legend class="fabric-picker__legend caption">
+        {{ option.name | escape }}
+        <span class="fabric-picker__count numerals">{{ 'products.fabric_count' | t: count: option.values.size }}</span>
+      </legend>
+      <div class="fabric-picker__grid">
+        {%- for value in option.values -%}
+          {%- liquid
+            assign fabric = nil
+            for f in fabrics
+              if f.name.value == value.name
+                assign fabric = f
+              endif
+            endfor
+            assign input_id = block.id | append: '-' | append: forloop.index
+          -%}
+          <label class="fabric-picker__item" for="{{ input_id }}">
+            <input
+              class="visually-hidden"
+              type="radio"
+              id="{{ input_id }}"
+              name="{{ block.id }}-{{ option.name | handleize }}"
+              value="{{ value.name | escape }}"
+              {% if value.selected %}
+                checked
+              {% endif %}
+              data-material="{{ fabric.material.value | escape }}"
+              data-care="{{ fabric.care.value | escape }}"
+              data-number="{{ fabric.number.value | default: forloop.index | escape }}"
+            >
+            <span class="fabric-picker__mount">
+            <span
+              class="fabric-picker__canvas"
+              style="--swatch: {{ fabric.colour.value | default: value.swatch.color | default: 'transparent' }};"
+            >
+              {%- if fabric.swatch.value -%}
+                {{ fabric.swatch.value | image_url: width: 240, height: 240, crop: 'center' | image_tag: alt: '', loading: 'lazy', widths: '120, 240' }}
+              {%- elsif value.swatch.image -%}
+                {{ value.swatch.image | image_url: width: 240, height: 240, crop: 'center' | image_tag: alt: '', loading: 'lazy' }}
+              {%- endif -%}
+            </span>
+            </span>
+            <span class="fabric-picker__label">
+              <span class="fabric-picker__number numerals">{{ fabric.number.value | default: forloop.index | prepend: 'No. ' }}</span>
+              <span class="fabric-picker__name">{{ value.name | escape }}</span>
+            </span>
+          </label>
+        {%- endfor -%}
+      </div>
+    </fieldset>
+    {%- if fabrics -%}
+      {%- assign current = nil -%}
+      {%- assign option_index = option.position | minus: 1 -%}
+      {%- for f in fabrics -%}
+        {%- if f.name.value == v.options[option_index] -%}
+          {%- assign current = f -%}
+        {%- endif -%}
+      {%- endfor -%}
+      <dl class="fabric-picker__detail" aria-live="polite">
+        <div>
+          <dt class="caption">{{ 'products.material' | t }}</dt>
+          <dd data-detail="material">{{ current.material.value }}</dd>
+        </div>
+        <div>
+          <dt class="caption">{{ 'products.care' | t }}</dt>
+          <dd data-detail="care">{{ current.care.value }}</dd>
+        </div>
+      </dl>
+    {%- endif -%}
+  </fabric-picker>
+{%- endif -%}
+
+{% stylesheet %}
+  .fabric-picker__set {
+    border: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .fabric-picker__legend {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 0 var(--space-3);
+    margin-bottom: var(--space-4);
+    border-bottom: var(--rule) solid var(--ink);
+  }
+
+  .fabric-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    gap: var(--space-4) var(--space-3);
+  }
+
+  .fabric-picker__item {
+    display: grid;
+    gap: var(--space-2);
+    cursor: pointer;
+  }
+
+  .fabric-picker__mount {
+    display: block;
+    padding: 7px;
+    transition: background-size var(--duration-quick) var(--ease-out);
+  }
+
+  .fabric-picker__item:hover .fabric-picker__mount {
+    background: repeating-linear-gradient(0deg, var(--ink) 0 1px, transparent 1px 6px);
+  }
+
+  .fabric-picker__item input:checked + .fabric-picker__mount {
+    background: repeating-linear-gradient(0deg, var(--ink) 0 2px, transparent 2px 4px);
+  }
+
+  .fabric-picker__item input:focus-visible + .fabric-picker__mount {
+    outline: var(--rule) solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  .fabric-picker__canvas {
+    display: block;
+    aspect-ratio: 1;
+    background: var(--swatch);
+    border: var(--rule) solid var(--ink);
+  }
+
+  .fabric-picker__canvas img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .fabric-picker__label {
+    display: grid;
+    line-height: 1.25;
+  }
+
+  .fabric-picker__number {
+    font-size: var(--text-small);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .fabric-picker__item input:checked ~ .fabric-picker__label .fabric-picker__name {
+    font-weight: var(--font-body--weight-bold, 700);
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule);
+    text-underline-offset: 0.3em;
+  }
+
+  .fabric-picker__detail {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--ink);
+    font-size: 0.9375rem;
+  }
+
+  .fabric-picker__detail dd {
+    margin: var(--space-1) 0 0;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class FabricPicker extends HTMLElement {
+    connectedCallback() {
+      this.page = this.closest('product-page');
+      this.optionIndex = Number(this.dataset.optionIndex);
+      this.addEventListener('change', (e) => {
+        const input = e.target;
+        if (input.type !== 'radio' || !this.page) return;
+        const options = [...this.page.variant.options];
+        options[this.optionIndex] = input.value;
+        this.page.selectOptions(options);
+        this.showDetail(input);
+      });
+    }
+
+    showDetail(input) {
+      const material = this.querySelector('[data-detail="material"]');
+      const care = this.querySelector('[data-detail="care"]');
+      if (material) material.textContent = input.dataset.material;
+      if (care) care.textContent = input.dataset.care;
+    }
+  }
+
+  if (!customElements.get('fabric-picker')) customElements.define('fabric-picker', FabricPicker);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:blocks.fabric_picker",
+  "settings": [
+    {
+      "type": "text",
+      "id": "option_name",
+      "label": "t:labels.option_name",
+      "default": "Fabric"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.fabric_picker" }]
+}
+{% endschema %}

@@ -1,0 +1,101 @@
+{% doc %}
+  Renders a field of parallel black waves: the theme's material. Tone comes from line
+  frequency, never from grey. The `wave-field` element can retune its spacing at runtime.
+
+  @param {string} id - Unique id used for the SVG pattern
+  @param {number} [spacing] - Distance between wave centres in px (default 14)
+  @param {number} [amplitude] - Wave height in px (default 6)
+  @param {number} [wavelength] - Length of one wave in px (default 160)
+  @param {string} [class] - Extra classes for the wrapper
+
+  @example
+  {% render 'wave-field', id: 'pdp-stage', spacing: 12, amplitude: 7 %}
+{% enddoc %}
+{%- liquid
+  assign s = spacing | default: 14
+  assign a = amplitude | default: 6
+  assign w = wavelength | default: 160
+  assign c = s | divided_by: 2.0
+  assign stroke = s | divided_by: 2.0
+  assign q = w | divided_by: 4.0
+  assign h = w | divided_by: 2.0
+  assign peak = c | minus: a | minus: a
+-%}
+<wave-field
+  class="wave-field {{ class }}"
+  data-spacing="{{ s }}"
+  data-amplitude="{{ a }}"
+  data-wavelength="{{ w }}"
+  aria-hidden="true"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" focusable="false" preserveAspectRatio="none">
+    <defs>
+      <pattern id="wave-{{ id }}" patternUnits="userSpaceOnUse" width="{{ w }}" height="{{ s }}">
+        <g fill="none" stroke="currentColor" stroke-width="{{ stroke }}">
+          {%- for row in (0..2) -%}
+            {%- assign offset = row | minus: 1 | times: s -%}
+            <path
+              d="M0 {{ c | plus: offset }} Q{{ q }} {{ peak | plus: offset }} {{ h }} {{ c | plus: offset }} T{{ w }} {{ c | plus: offset }}"
+            />
+          {%- endfor -%}
+        </g>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#wave-{{ id }})" />
+  </svg>
+</wave-field>
+
+{% stylesheet %}
+  .wave-field {
+    display: block;
+    color: var(--ink, #000);
+  }
+
+  .wave-field svg {
+    width: 100%;
+    height: 100%;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class WaveField extends HTMLElement {
+    connectedCallback() {
+      this.pattern = this.querySelector('pattern');
+      this.paths = [...this.querySelectorAll('path')];
+      this.spacing = Number(this.dataset.spacing);
+      this.amplitude = Number(this.dataset.amplitude);
+      this.wavelength = Number(this.dataset.wavelength);
+      this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    }
+
+    draw(spacing, amplitude) {
+      const w = this.wavelength;
+      const c = spacing / 2;
+      const peak = c - amplitude * 2;
+      this.pattern.setAttribute('height', spacing);
+      this.pattern.firstElementChild.setAttribute('stroke-width', spacing / 2);
+      this.paths.forEach((path, row) => {
+        const o = (row - 1) * spacing;
+        path.setAttribute('d', `M0 ${c + o} Q${w / 4} ${peak + o} ${w / 2} ${c + o} T${w} ${c + o}`);
+      });
+    }
+
+    /** Tighten the field to `ratio` of its resting spacing, then let it relax back. */
+    pulse(ratio = 0.45, duration = 900) {
+      if (this.reduced.matches) return;
+      cancelAnimationFrame(this.frame);
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        const squeeze = Math.sin(Math.PI * t) * (1 - ratio);
+        const spacing = this.spacing * (1 - squeeze);
+        this.draw(spacing, this.amplitude * (1 - squeeze * 0.5));
+        if (t < 1) this.frame = requestAnimationFrame(step);
+        else this.draw(this.spacing, this.amplitude);
+      };
+      this.frame = requestAnimationFrame(step);
+    }
+  }
+
+  if (!customElements.get('wave-field')) customElements.define('wave-field', WaveField);
+{% endjavascript %}

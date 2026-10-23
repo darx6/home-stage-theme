@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
+    "theme_name": "HomeStage",
     "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_author": "Theme Lab",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -16,9 +16,16 @@
       },
       {
         "type": "font_picker",
-        "id": "type_primary_font",
-        "default": "work_sans_n4",
-        "label": "t:general.primary"
+        "id": "type_display_font",
+        "default": "big_shoulders_n8",
+        "label": "t:labels.display_font",
+        "info": "t:info.display_font"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "schibsted_grotesk_n4",
+        "label": "t:labels.body_font"
       }
     ]
   },
@@ -39,17 +46,17 @@
             "label": "t:options.page_width.wide"
           }
         ],
-        "default": "90rem"
+        "default": "110rem"
       },
       {
         "type": "range",
         "id": "min_page_margin",
-        "min": 10,
-        "max": 100,
-        "step": 1,
+        "min": 12,
+        "max": 80,
+        "step": 2,
         "unit": "px",
         "label": "t:labels.page_margin",
-        "default": 20
+        "default": 32
       }
     ]
   },
@@ -57,26 +64,20 @@
     "name": "t:general.colors",
     "settings": [
       {
+        "type": "paragraph",
+        "content": "t:info.colors"
+      },
+      {
         "type": "color",
         "id": "background_color",
         "default": "#FFFFFF",
-        "label": "t:labels.background"
+        "label": "t:labels.gallery"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
-        "label": "t:labels.foreground"
-      },
-      {
-        "type": "range",
-        "id": "input_corner_radius",
-        "min": 0,
-        "max": 10,
-        "step": 1,
-        "unit": "px",
-        "label": "t:labels.input_corner_radius",
-        "default": 4
+        "default": "#000000",
+        "label": "t:labels.ink"
       }
     ]
   }

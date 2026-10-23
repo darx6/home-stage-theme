@@ -1,0 +1,57 @@
+{% doc %}
+  A vertical column of product blocks. On wide screens the product section shows two
+  columns side by side; on phones the columns dissolve into one ordered stack.
+
+  @example
+  {% content_for 'block', type: 'product-column', id: 'details' %}
+{% enddoc %}
+
+<div
+  class="product-column{% if block.settings.sticky %} product-column--sticky{% endif %}"
+  style="--column-gap: {{ block.settings.gap }}px;"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  .product-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--column-gap);
+    min-width: 0;
+  }
+
+  @media (min-width: 990px) {
+    .product-column--sticky {
+      position: sticky;
+      top: var(--space-5);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.product_column",
+  "blocks": [{ "type": "@theme" }, { "type": "@app" }],
+  "settings": [
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:labels.block_gap",
+      "min": 8,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "t:labels.sticky",
+      "default": false
+    }
+  ],
+  "presets": [{ "name": "t:blocks.product_column" }]
+}
+{% endschema %}

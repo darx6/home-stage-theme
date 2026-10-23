@@ -46,6 +46,23 @@
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
+    "display_font": "Display",
+    "body_font": "Body",
+    "gallery": "Gallery (background)",
+    "ink": "Ink (text and lines)",
+    "column_gap": "Column spacing",
+    "block_gap": "Block spacing",
+    "sticky": "Stay in view while scrolling",
+    "subtitle": "Line under the name",
+    "show_tax_note": "Show tax note",
+    "option_name": "Option name",
+    "wave_spacing": "Wave spacing",
+    "show_dynamic_checkout": "Show dynamic checkout buttons",
+    "room_width": "Room width",
+    "room_depth": "Room depth",
+    "heading": "Heading",
+    "open_by_default": "Open by default",
+    "custom_liquid": "Custom Liquid",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
     "text": "Text"
@@ -73,5 +90,23 @@
       "subtitle": "Subtitle",
       "normal": "Normal text"
     },
+  },
+  "info": {
+    "display_font": "Tall, condensed faces suit the gallery look best.",
+    "colors": "The theme draws everything in two colours. Product photos and swatches bring the only other colour.",
+    "subtitle": "A short line such as the product type.",
+    "canvas_option": "Images whose alt text contains an option value (for example \"Cobalt wool\") belong to that variant. Words like \"front\" or \"side\" in the alt text name the view."
+  },
+  "blocks": {
+    "product_column": "Column",
+    "product_title": "Title",
+    "product_price": "Price",
+    "product_canvas": "Canvas",
+    "fabric_picker": "Fabric picker",
+    "buy_buttons": "Buy buttons",
+    "lead_time": "Lead time",
+    "dimensions": "Dimensions",
+    "product_description": "Description",
+    "custom_liquid": "Custom Liquid"
   }
 }

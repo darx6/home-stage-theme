@@ -1,0 +1,420 @@
+{% doc %}
+  Product dimensions read at three distances: the piece itself (front and side line
+  drawings), the piece in a room (floor plan), and a fit check against the visitor's
+  own wall and doorway. Drawings are generated from the width, depth and height fields.
+
+  @example
+  {% content_for 'block', type: 'dimensions', id: 'dimensions' %}
+{% enddoc %}
+{%- liquid
+  assign p = closest.product
+  assign mw = p.metafields.homestage.width.value
+  assign md = p.metafields.homestage.depth.value
+  assign mh = p.metafields.homestage.height.value
+-%}
+{%- if mw and md and mh -%}
+  {%- liquid
+    assign w = mw.value | times: 1.0
+    assign d = md.value | times: 1.0
+    assign h = mh.value | times: 1.0
+    if mw.unit == 'cm'
+      assign w = w | divided_by: 2.54
+    elsif mw.unit == 'm'
+      assign w = w | divided_by: 0.0254
+    endif
+    if md.unit == 'cm'
+      assign d = d | divided_by: 2.54
+    elsif md.unit == 'm'
+      assign d = d | divided_by: 0.0254
+    endif
+    if mh.unit == 'cm'
+      assign h = h | divided_by: 2.54
+    elsif mh.unit == 'm'
+      assign h = h | divided_by: 0.0254
+    endif
+    assign w10 = w | times: 10 | round
+    assign d10 = d | times: 10 | round
+    assign h10 = h | times: 10 | round
+    assign arm = w10 | times: 0.1 | round
+    assign seat = h10 | times: 0.45 | round
+    assign arm_h = h10 | times: 0.64 | round
+    assign leg = h10 | times: 0.12 | round
+    assign inner = w10 | minus: arm | minus: arm
+    assign label = w10 | times: 0.055 | round
+    assign leg_w = arm | divided_by: 3
+    assign right_leg = w10 | minus: leg_w | minus: leg_w
+    assign front_vb_x = label | times: -2
+    assign front_vb_w = label | times: 5 | plus: w10
+    assign vb_h = label | times: 4 | plus: h10
+    assign side_vb_w = label | times: 3 | plus: d10
+    assign uid = block.id
+    assign room_w = block.settings.room_width | times: 120
+    assign room_d = block.settings.room_depth | times: 120
+    assign sofa_x = room_w | minus: w10 | divided_by: 2
+    assign walk = 300
+  -%}
+  <product-dimensions
+    data-pdp="dimensions" class="dimensions"
+    data-width="{{ w }}"
+    data-depth="{{ d }}"
+    data-height="{{ h }}"
+    data-fits="{{ 'products.fit_yes' | t }}"
+    data-too-wide="{{ 'products.fit_too_wide' | t }}"
+    data-door-yes="{{ 'products.door_yes' | t }}"
+    data-door-no="{{ 'products.door_no' | t }}"
+    {{ block.shopify_attributes }}
+  >
+    <div class="dimensions__head">
+      <h2 class="caption">{{ 'products.dimensions' | t }}</h2>
+      <div class="dimensions__units" role="group" aria-label="{{ 'products.units' | t }}">
+        <button type="button" aria-pressed="true" data-unit="in">in</button>
+        <button type="button" aria-pressed="false" data-unit="cm">cm</button>
+      </div>
+    </div>
+
+    <p class="dimensions__summary numerals">
+      <span>{{ 'products.width_short' | t }} <span data-len="{{ w }}"></span></span>
+      <span>{{ 'products.depth_short' | t }} <span data-len="{{ d }}"></span></span>
+      <span>{{ 'products.height_short' | t }} <span data-len="{{ h }}"></span></span>
+    </p>
+
+    <div class="dimensions__tabs" role="tablist" aria-label="{{ 'products.dimensions' | t }}">
+      <button type="button" role="tab" id="{{ uid }}-tab-piece" aria-controls="{{ uid }}-piece" aria-selected="true">
+        {{- 'products.dim_piece' | t -}}
+      </button>
+      <button type="button" role="tab" id="{{ uid }}-tab-room" aria-controls="{{ uid }}-room" aria-selected="false" tabindex="-1">
+        {{- 'products.dim_room' | t -}}
+      </button>
+      <button type="button" role="tab" id="{{ uid }}-tab-fit" aria-controls="{{ uid }}-fit" aria-selected="false" tabindex="-1">
+        {{- 'products.dim_fit' | t -}}
+      </button>
+    </div>
+
+    <div class="dimensions__panel" role="tabpanel" id="{{ uid }}-piece" aria-labelledby="{{ uid }}-tab-piece">
+      <div class="dimensions__drawings">
+        <figure>
+          <svg
+            viewBox="{{ front_vb_x }} -{{ label }} {{ front_vb_w }} {{ vb_h }}"
+            role="img"
+            aria-label="{{ 'products.front_view' | t }}"
+          >
+            <g class="dimensions__piece">
+              <rect x="{{ arm }}" y="0" width="{{ inner }}" height="{{ h10 | minus: seat }}" />
+              <rect x="0" y="{{ h10 | minus: arm_h }}" width="{{ arm }}" height="{{ arm_h | minus: leg }}" />
+              <rect x="{{ w10 | minus: arm }}" y="{{ h10 | minus: arm_h }}" width="{{ arm }}" height="{{ arm_h | minus: leg }}" />
+              <rect x="{{ arm }}" y="{{ h10 | minus: seat }}" width="{{ inner }}" height="{{ seat | minus: leg }}" />
+              <line x1="{{ w10 | divided_by: 2 }}" y1="{{ h10 | minus: seat }}" x2="{{ w10 | divided_by: 2 }}" y2="{{ h10 | minus: leg }}" />
+              <rect x="{{ leg_w }}" y="{{ h10 | minus: leg }}" width="{{ leg_w }}" height="{{ leg }}" />
+              <rect x="{{ right_leg }}" y="{{ h10 | minus: leg }}" width="{{ leg_w }}" height="{{ leg }}" />
+            </g>
+            <g class="dimensions__measure">
+              <line x1="0" y1="{{ h10 | plus: label }}" x2="{{ w10 }}" y2="{{ h10 | plus: label }}" />
+              <line x1="0" y1="{{ h10 | plus: label | minus: 12 }}" x2="0" y2="{{ h10 | plus: label | plus: 12 }}" />
+              <line x1="{{ w10 }}" y1="{{ h10 | plus: label | minus: 12 }}" x2="{{ w10 }}" y2="{{ h10 | plus: label | plus: 12 }}" />
+              <text x="{{ w10 | divided_by: 2 }}" y="{{ h10 | plus: label | plus: label | plus: label }}" font-size="{{ label }}" text-anchor="middle" data-len="{{ w }}"></text>
+              <line x1="-{{ label }}" y1="0" x2="-{{ label }}" y2="{{ h10 }}" />
+              <text x="-{{ label | plus: 12 }}" y="{{ h10 | divided_by: 2 }}" font-size="{{ label }}" text-anchor="middle" transform="rotate(-90 -{{ label | plus: 12 }} {{ h10 | divided_by: 2 }})" dy="-0.35em" data-len="{{ h }}"></text>
+            </g>
+          </svg>
+          <figcaption class="caption">{{ 'products.front_view' | t }}</figcaption>
+        </figure>
+        <figure>
+          <svg
+            viewBox="-{{ label }} -{{ label }} {{ side_vb_w }} {{ vb_h }}"
+            role="img"
+            aria-label="{{ 'products.side_view' | t }}"
+          >
+            <g class="dimensions__piece">
+              <rect x="{{ d10 | times: 0.78 | round }}" y="0" width="{{ d10 | times: 0.22 | round }}" height="{{ h10 | minus: leg }}" />
+              <rect x="0" y="{{ h10 | minus: arm_h }}" width="{{ d10 }}" height="{{ arm_h | minus: leg }}" />
+              <rect x="{{ d10 | times: 0.06 | round }}" y="{{ h10 | minus: leg }}" width="{{ leg_w }}" height="{{ leg }}" />
+              <rect x="{{ d10 | times: 0.86 | round }}" y="{{ h10 | minus: leg }}" width="{{ leg_w }}" height="{{ leg }}" />
+            </g>
+            <g class="dimensions__measure">
+              <line x1="0" y1="{{ h10 | plus: label }}" x2="{{ d10 }}" y2="{{ h10 | plus: label }}" />
+              <line x1="0" y1="{{ h10 | plus: label | minus: 12 }}" x2="0" y2="{{ h10 | plus: label | plus: 12 }}" />
+              <line x1="{{ d10 }}" y1="{{ h10 | plus: label | minus: 12 }}" x2="{{ d10 }}" y2="{{ h10 | plus: label | plus: 12 }}" />
+              <text x="{{ d10 | divided_by: 2 }}" y="{{ h10 | plus: label | plus: label | plus: label }}" font-size="{{ label }}" text-anchor="middle" data-len="{{ d }}"></text>
+            </g>
+          </svg>
+          <figcaption class="caption">{{ 'products.side_view' | t }}</figcaption>
+        </figure>
+      </div>
+      <p class="dimensions__note">{{ 'products.drawing_note' | t }}</p>
+    </div>
+
+    <div class="dimensions__panel" role="tabpanel" id="{{ uid }}-room" aria-labelledby="{{ uid }}-tab-room" hidden>
+      <figure class="dimensions__plan">
+        <svg viewBox="-60 -60 {{ room_w | plus: 120 }} {{ room_d | plus: 120 }}" role="img" aria-label="{{ 'products.plan_label' | t: width: block.settings.room_width, depth: block.settings.room_depth }}">
+          <defs>
+            <pattern id="{{ uid }}-walk" patternUnits="userSpaceOnUse" width="24" height="24" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="24" stroke="currentColor" stroke-width="5" />
+            </pattern>
+          </defs>
+          <rect class="dimensions__room" x="0" y="0" width="{{ room_w }}" height="{{ room_d }}" />
+          <rect x="{{ sofa_x }}" y="{{ d10 }}" width="{{ w10 }}" height="{{ walk }}" fill="url(#{{ uid }}-walk)" />
+          <rect class="dimensions__sofa" x="{{ sofa_x }}" y="0" width="{{ w10 }}" height="{{ d10 }}" />
+          <text x="{{ room_w | divided_by: 2 }}" y="{{ d10 | plus: walk | plus: 90 }}" font-size="56" text-anchor="middle">{{ 'products.walkway' | t }}</text>
+        </svg>
+        <figcaption class="caption">
+          {{- 'products.plan_label' | t: width: block.settings.room_width, depth: block.settings.room_depth -}}
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="dimensions__panel" role="tabpanel" id="{{ uid }}-fit" aria-labelledby="{{ uid }}-tab-fit" hidden>
+      <form class="dimensions__fit" data-fit novalidate>
+        <label for="{{ uid }}-space">{{ 'products.fit_space' | t }}</label>
+        <div class="field">
+          <input id="{{ uid }}-space" type="number" inputmode="decimal" min="0" step="0.5" data-space>
+          <span class="field__unit"><span data-unit-label>in</span></span>
+        </div>
+        <label for="{{ uid }}-door">{{ 'products.fit_door' | t }}</label>
+        <div class="field">
+          <input id="{{ uid }}-door" type="number" inputmode="decimal" min="0" step="0.5" data-door>
+          <span class="field__unit"><span data-unit-label>in</span></span>
+        </div>
+        <output class="dimensions__result" for="{{ uid }}-space {{ uid }}-door" aria-live="polite" data-result></output>
+      </form>
+    </div>
+  </product-dimensions>
+{%- endif -%}
+
+{% stylesheet %}
+  .dimensions {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: var(--rule) solid var(--ink);
+  }
+
+  .dimensions__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dimensions__units {
+    display: flex;
+    border: var(--rule) solid var(--ink);
+  }
+
+  .dimensions__units button,
+  .dimensions__tabs [role='tab'] {
+    min-height: 2.5rem;
+    min-width: 2.75rem;
+    padding: 0 var(--space-3);
+    border: 0;
+    background: var(--gallery);
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--text-small);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+
+  .dimensions__units [aria-pressed='true'],
+  .dimensions__tabs [aria-selected='true'] {
+    background: var(--ink);
+    color: var(--gallery);
+  }
+
+  .dimensions__summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-family: var(--font-display--family);
+    font-weight: var(--font-display--weight);
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .dimensions__tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: var(--rule) solid var(--ink);
+  }
+
+  .dimensions__tabs [role='tab'] + [role='tab'] {
+    border-inline-start: var(--rule) solid var(--ink);
+  }
+
+  .dimensions__drawings {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr;
+    gap: var(--space-5);
+    align-items: end;
+  }
+
+  .dimensions__drawings figure,
+  .dimensions__plan {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .dimensions__piece rect,
+  .dimensions__piece line,
+  .dimensions__room,
+  .dimensions__sofa {
+    fill: var(--gallery);
+    stroke: var(--ink);
+    stroke-width: 6;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .dimensions__piece rect,
+  .dimensions__piece line {
+    stroke-width: 2;
+  }
+
+  .dimensions__sofa {
+    fill: var(--ink);
+  }
+
+  .dimensions__measure line {
+    stroke: var(--ink);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .dimensions svg text {
+    fill: var(--ink);
+    font-family: var(--font-body--family);
+  }
+
+  .dimensions__plan svg {
+    color: var(--ink);
+  }
+
+  .dimensions__note {
+    font-size: var(--text-small);
+  }
+
+  .dimensions__fit {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .dimensions__fit label {
+    margin-top: var(--space-2);
+    font-size: 0.9375rem;
+  }
+
+  .dimensions__result {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: 1.0625rem;
+    font-weight: var(--font-body--weight-bold, 700);
+  }
+
+  .dimensions__result p + p {
+    margin-top: var(--space-2);
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ProductDimensions extends HTMLElement {
+    connectedCallback() {
+      this.unit = 'in';
+      this.size = { width: Number(this.dataset.width), depth: Number(this.dataset.depth), height: Number(this.dataset.height) };
+      this.querySelectorAll('[data-unit]').forEach((b) => b.addEventListener('click', () => this.setUnit(b.dataset.unit)));
+      this.tabs = [...this.querySelectorAll('[role="tab"]')];
+      this.tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => this.selectTab(i));
+        tab.addEventListener('keydown', (e) => {
+          const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+          if (!step) return;
+          e.preventDefault();
+          this.selectTab((i + step + this.tabs.length) % this.tabs.length, true);
+        });
+      });
+      this.querySelector('[data-fit]').addEventListener('input', () => this.checkFit());
+      this.render();
+    }
+
+    format(inches) {
+      if (this.unit === 'cm') return `${Math.round(inches * 2.54)} cm`;
+      return `${Math.round(inches * 2) / 2} in`;
+    }
+
+    setUnit(unit) {
+      if (unit === this.unit) return;
+      const toInches = (v) => (this.unit === 'cm' ? v / 2.54 : v);
+      const fromInches = (v) => (unit === 'cm' ? v * 2.54 : v);
+      this.querySelectorAll('[data-space], [data-door]').forEach((input) => {
+        if (input.value) input.value = Math.round(fromInches(toInches(Number(input.value))) * 2) / 2;
+      });
+      this.unit = unit;
+      this.querySelectorAll('[data-unit]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.unit === unit)));
+      this.render();
+    }
+
+    render() {
+      this.querySelectorAll('[data-len]').forEach((el) => (el.textContent = this.format(Number(el.dataset.len))));
+      this.querySelectorAll('[data-unit-label]').forEach((el) => (el.textContent = this.unit));
+      this.checkFit();
+    }
+
+    selectTab(index, focus = false) {
+      this.tabs.forEach((tab, i) => {
+        const on = i === index;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        this.querySelector(`#${tab.getAttribute('aria-controls')}`).hidden = !on;
+      });
+      if (focus) this.tabs[index].focus();
+    }
+
+    checkFit() {
+      const out = this.querySelector('[data-result]');
+      const toInches = (v) => (this.unit === 'cm' ? v / 2.54 : v);
+      const space = Number(this.querySelector('[data-space]').value);
+      const door = Number(this.querySelector('[data-door]').value);
+      const lines = [];
+      if (space > 0) {
+        const spare = toInches(space) - this.size.width;
+        const text = spare >= 0 ? this.dataset.fits : this.dataset.tooWide;
+        lines.push(text.replace('%s', this.format(Math.abs(spare))));
+      }
+      if (door > 0) {
+        const thinnest = Math.min(this.size.depth, this.size.height);
+        const ok = toInches(door) >= thinnest;
+        lines.push((ok ? this.dataset.doorYes : this.dataset.doorNo).replace('%s', this.format(thinnest)));
+      }
+      out.replaceChildren(...lines.map((t) => Object.assign(document.createElement('p'), { textContent: t })));
+    }
+  }
+
+  if (!customElements.get('product-dimensions')) customElements.define('product-dimensions', ProductDimensions);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:blocks.dimensions",
+  "settings": [
+    {
+      "type": "range",
+      "id": "room_width",
+      "label": "t:labels.room_width",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "ft",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "room_depth",
+      "label": "t:labels.room_depth",
+      "min": 8,
+      "max": 24,
+      "step": 1,
+      "unit": "ft",
+      "default": 10
+    }
+  ],
+  "presets": [{ "name": "t:blocks.dimensions" }]
+}
+{% endschema %}

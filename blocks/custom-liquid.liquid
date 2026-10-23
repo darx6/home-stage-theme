@@ -1,0 +1,23 @@
+{% doc %}
+  Merchant-authored Liquid or HTML, for app snippets and one-off content.
+
+  @example
+  {% content_for 'block', type: 'custom-liquid', id: 'custom' %}
+{% enddoc %}
+<div data-pdp class="custom-liquid" {{ block.shopify_attributes }}>
+  {{ block.settings.custom_liquid }}
+</div>
+
+{% schema %}
+{
+  "name": "t:blocks.custom_liquid",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:labels.custom_liquid"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.custom_liquid" }]
+}
+{% endschema %}

@@ -1,0 +1,120 @@
+{% doc %}
+  Made-to-order lead time from the product's lead time fields, with an arrival window
+  counted from today and the making stages drawn as line fields that tighten toward
+  completion. Renders nothing when the product has no lead time.
+
+  @example
+  {% content_for 'block', type: 'lead-time', id: 'lead-time' %}
+{% enddoc %}
+{%- liquid
+  assign p = closest.product
+  assign min_weeks = p.metafields.homestage.lead_time_min_weeks.value
+  assign max_weeks = p.metafields.homestage.lead_time_max_weeks.value | default: min_weeks
+  assign stages = p.metafields.homestage.making_stages.value
+-%}
+{%- if min_weeks -%}
+  {%- liquid
+    assign now = 'now' | date: '%s' | plus: 0
+    assign from_seconds = min_weeks | times: 604800 | plus: now
+    assign to_seconds = max_weeks | times: 604800 | plus: now
+  -%}
+  <lead-time
+    data-pdp="lead" class="lead-time"
+    data-min-weeks="{{ min_weeks }}"
+    data-max-weeks="{{ max_weeks }}"
+    {{ block.shopify_attributes }}
+  >
+    <h2 class="lead-time__title caption">{{ 'products.made_to_order' | t }}</h2>
+    <p class="lead-time__weeks">
+      {%- if min_weeks == max_weeks -%}
+        {{ 'products.lead_time_single' | t: weeks: min_weeks }}
+      {%- else -%}
+        {{ 'products.lead_time_range' | t: min: min_weeks, max: max_weeks }}
+      {%- endif -%}
+    </p>
+    <p class="lead-time__arrival">
+      {{ 'products.arrival_window' | t }}
+      <span class="numerals" data-arrival>
+        {{- from_seconds | date: '%b %-d' }} – {{ to_seconds | date: '%b %-d' -}}
+      </span>
+    </p>
+
+    {%- if stages.size > 0 -%}
+      <ol class="lead-time__stages">
+        {%- for stage in stages -%}
+          {%- assign gap = forloop.length | minus: forloop.index | times: 2 | plus: 3 -%}
+          <li class="lead-time__stage" style="--stage-gap: {{ gap }}px;">
+            <span class="lead-time__strip" aria-hidden="true"></span>
+            <span class="lead-time__name">{{ stage | escape }}</span>
+          </li>
+        {%- endfor -%}
+      </ol>
+    {%- endif -%}
+  </lead-time>
+{%- endif -%}
+
+{% stylesheet %}
+  .lead-time {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: var(--rule) solid var(--ink);
+  }
+
+  .lead-time__weeks {
+    font-family: var(--font-display--family);
+    font-weight: var(--font-display--weight);
+    font-size: 2rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .lead-time__arrival {
+    font-size: 0.9375rem;
+  }
+
+  .lead-time__stages {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .lead-time__stage {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: 0.9375rem;
+  }
+
+  .lead-time__strip {
+    height: 1.25rem;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px var(--stage-gap));
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class LeadTime extends HTMLElement {
+    connectedCallback() {
+      const day = 86400000;
+      const now = Date.now();
+      const from = new Date(now + Number(this.dataset.minWeeks) * 7 * day);
+      const to = new Date(now + Number(this.dataset.maxWeeks) * 7 * day);
+      const fmt = new Intl.DateTimeFormat(document.documentElement.lang || undefined, { month: 'short', day: 'numeric' });
+      const target = this.querySelector('[data-arrival]');
+      if (target) target.textContent = `${fmt.format(from)} – ${fmt.format(to)}`;
+    }
+  }
+
+  if (!customElements.get('lead-time')) customElements.define('lead-time', LeadTime);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:blocks.lead_time",
+  "settings": [],
+  "presets": [{ "name": "t:blocks.lead_time" }]
+}
+{% endschema %}

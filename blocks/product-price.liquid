@@ -1,0 +1,88 @@
+{% doc %}
+  The selected variant's price, updated when the visitor picks another variant.
+
+  @example
+  {% content_for 'block', type: 'product-price', id: 'price' %}
+{% enddoc %}
+{%- liquid
+  assign p = closest.product
+  assign v = p.selected_or_first_available_variant
+-%}
+<product-price
+  data-pdp="price" class="product-price"
+  data-money-format="{{ shop.money_format | escape }}"
+  {{ block.shopify_attributes }}
+>
+  <p class="product-price__amount numerals" data-price>
+    {%- if v.compare_at_price > v.price -%}
+      <span class="visually-hidden">{{ 'products.sale_price' | t }}</span>
+    {%- endif -%}
+    {{ v.price | money }}
+  </p>
+  <p class="product-price__was numerals" data-compare {% unless v.compare_at_price > v.price %}hidden{% endunless %}>
+    <span class="visually-hidden">{{ 'products.regular_price' | t }}</span>
+    <s>{{ v.compare_at_price | money }}</s>
+  </p>
+  {%- if block.settings.show_tax_note -%}
+    <p class="product-price__note">{{ 'products.tax_note' | t }}</p>
+  {%- endif -%}
+</product-price>
+
+{% stylesheet %}
+  .product-price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .product-price__amount {
+    font-family: var(--font-display--family);
+    font-weight: var(--font-display--weight);
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .product-price__note {
+    flex-basis: 100%;
+    font-size: var(--text-small);
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ProductPrice extends HTMLElement {
+    connectedCallback() {
+      this.closest('product-page')?.addEventListener('product:variant', (e) => this.render(e.detail.variant));
+    }
+
+    format(cents) {
+      const format = this.dataset.moneyFormat;
+      const amount = (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return format.replace(/\{\{\s*\w+\s*\}\}/, amount);
+    }
+
+    render(variant) {
+      this.querySelector('[data-price]').textContent = this.format(variant.price);
+      const compare = this.querySelector('[data-compare]');
+      compare.hidden = !(variant.compare_at_price > variant.price);
+      if (!compare.hidden) compare.querySelector('s').textContent = this.format(variant.compare_at_price);
+    }
+  }
+
+  if (!customElements.get('product-price')) customElements.define('product-price', ProductPrice);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:blocks.product_price",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_tax_note",
+      "label": "t:labels.show_tax_note",
+      "default": true
+    }
+  ],
+  "presets": [{ "name": "t:blocks.product_price" }]
+}
+{% endschema %}

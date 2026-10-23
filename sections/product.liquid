@@ -1,50 +1,109 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+{%- assign selected_variant = product.selected_or_first_available_variant -%}
+<product-page
+  class="pdp"
+  data-product-url="{{ product.url }}"
+  data-variant-id="{{ selected_variant.id }}"
+  style="--pdp-gap: {{ section.settings.gap }}px;"
+>
+  <script type="application/json" data-variants>
+    {{ product.variants | json }}
+  </script>
+  <div class="pdp__grid">
+    {% content_for 'blocks' %}
+  </div>
+</product-page>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+{% stylesheet %}
+  .pdp {
+    display: block;
+    padding-block: var(--space-6) var(--space-9);
+  }
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+  .pdp__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+  @media (max-width: 989px) {
+    .pdp__grid > .product-column {
+      display: contents;
+    }
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+    .pdp__grid [data-pdp] {
+      order: 6;
+    }
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+    .pdp__grid [data-pdp="title"] {
+      order: 1;
+    }
 
-    <input type="text" name="quantity" min="1" value="1">
+    .pdp__grid [data-pdp="canvas"] {
+      order: 2;
+    }
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+    .pdp__grid [data-pdp="fabrics"] {
+      order: 3;
+    }
+
+    .pdp__grid [data-pdp="price"] {
+      order: 4;
+    }
+
+    .pdp__grid [data-pdp="buy"] {
+      order: 5;
+    }
+  }
+
+  @media (min-width: 990px) {
+    .pdp__grid {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      column-gap: var(--pdp-gap);
+      align-items: start;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ProductPage extends HTMLElement {
+    connectedCallback() {
+      this.variants = JSON.parse(this.querySelector('[data-variants]').textContent);
+      this.variant = this.variants.find((v) => String(v.id) === this.dataset.variantId) || this.variants[0];
+    }
+
+    /** Select a variant by its option values; every block listens for `product:variant`. */
+    selectOptions(options) {
+      const variant = this.variants.find((v) => v.options.every((value, i) => value === options[i]));
+      if (!variant || variant.id === this.variant.id) return;
+      this.variant = variant;
+      const url = new URL(window.location.href);
+      url.searchParams.set('variant', variant.id);
+      window.history.replaceState({}, '', url);
+      this.dispatchEvent(new CustomEvent('product:variant', { detail: { variant }, bubbles: false }));
+    }
+  }
+
+  if (!customElements.get('product-page')) customElements.define('product-page', ProductPage);
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.product",
-  "settings": [],
+  "tag": "section",
+  "class": "pdp-section",
+  "blocks": [{ "type": "@theme" }, { "type": "@app" }],
+  "settings": [
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:labels.column_gap",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

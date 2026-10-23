@@ -1,0 +1,81 @@
+{% doc %}
+  The product description, open by default or folded behind a heading.
+
+  @example
+  {% content_for 'block', type: 'product-description', id: 'description' %}
+{% enddoc %}
+{%- assign p = closest.product -%}
+{%- if p.description != blank -%}
+  <div data-pdp="description" class="product-description" {{ block.shopify_attributes }}>
+    <details{% if block.settings.open %} open{% endif %}>
+      <summary class="caption">
+        {%- if block.settings.heading != blank -%}
+          {{ block.settings.heading | escape }}
+        {%- else -%}
+          {{ 'products.about' | t }}
+        {%- endif -%}
+      </summary>
+      <div class="product-description__body">{{ p.description }}</div>
+    </details>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-description details {
+    border-top: var(--rule) solid var(--ink);
+  }
+
+  .product-description summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 3rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .product-description summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .product-description summary::after {
+    content: '';
+    width: 1.25rem;
+    height: 0.75rem;
+    background: repeating-linear-gradient(0deg, var(--ink) 0 2px, transparent 2px 5px);
+    transition: transform var(--duration-quick) var(--ease-out);
+  }
+
+  .product-description details[open] summary::after {
+    transform: scaleY(0.4);
+  }
+
+  .product-description__body {
+    max-width: 65ch;
+    padding-bottom: var(--space-4);
+  }
+
+  .product-description__body > * + * {
+    margin-top: var(--space-3);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.product_description",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "open",
+      "label": "t:labels.open_by_default",
+      "default": true
+    }
+  ],
+  "presets": [{ "name": "t:blocks.product_description" }]
+}
+{% endschema %}

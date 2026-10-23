@@ -1,0 +1,42 @@
+{% doc %}
+  The product name set as the page's one monumental type moment, with a quiet line beneath.
+
+  @example
+  {% content_for 'block', type: 'product-title', id: 'title' %}
+{% enddoc %}
+{%- assign p = closest.product -%}
+<div data-pdp="title" {{ block.shopify_attributes }}>
+  <h1 class="product-title display">{{ p.title | escape }}</h1>
+  {%- if block.settings.subtitle != blank -%}
+    <p class="product-title__line caption">{{ block.settings.subtitle }}</p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .product-title {
+    font-size: var(--text-display);
+    max-width: 8ch;
+  }
+
+  .product-title__line {
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: var(--rule) solid var(--ink);
+    max-width: 22rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.product_title",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "t:labels.subtitle",
+      "info": "t:info.subtitle"
+    }
+  ],
+  "presets": [{ "name": "t:blocks.product_title" }]
+}
+{% endschema %}

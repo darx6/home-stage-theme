@@ -1,0 +1,384 @@
+{% doc %}
+  The product hung as a framed canvas on a wave field, with view switching, a 3D viewer
+  and AR. Media is matched to the selected option value through its alt text: an image
+  whose alt contains "Cobalt wool" belongs to the Cobalt wool variant, and words such as
+  "front" or "side" in the alt name the view.
+
+  @example
+  {% content_for 'block', type: 'product-canvas', id: 'canvas' %}
+{% enddoc %}
+{%- liquid
+  assign p = closest.product
+  assign v = p.selected_or_first_available_variant
+  assign option_index = 0
+  for option in p.options_with_values
+    if option.name == block.settings.option_name
+      assign option_index = forloop.index0
+    endif
+  endfor
+  assign first_media = v.featured_media | default: p.featured_media
+  assign models = p.media | where: 'media_type', 'model'
+-%}
+<product-canvas
+  data-pdp="canvas" class="product-canvas"
+  data-option-index="{{ option_index }}"
+  data-label-angle="{{ 'products.view_angle' | t }}"
+  data-label-front="{{ 'products.view_front' | t }}"
+  data-label-side="{{ 'products.view_side' | t }}"
+  data-label-render="{{ 'products.render_note' | t }}"
+  {{ block.shopify_attributes }}
+>
+  <script type="application/json" data-media>
+    [
+      {%- for media in p.media -%}
+        {%- if media.media_type == 'image' -%}
+          {%- capture srcset -%}
+            {{- media | image_url: width: 700 }} 700w, {{ media | image_url: width: 1100 }} 1100w, {{ media | image_url: width: 1600 }} 1600w, {{ media | image_url: width: 2000 }} 2000w
+          {%- endcapture -%}
+          {
+            "id": {{ media.id | json }},
+            "type": "image",
+            "alt": {{ media.alt | json }},
+            "src": {{ media | image_url: width: 1600 | json }},
+            "srcset": {{ srcset | json }},
+            "width": {{ media.width | json }},
+            "height": {{ media.height | json }}
+          }
+        {%- else -%}
+          {
+            "id": {{ media.id | json }},
+            "type": {{ media.media_type | json }},
+            "alt": {{ media.alt | json }}
+          }
+        {%- endif -%}
+        {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  </script>
+
+  <div class="product-canvas__stage">
+    {% render 'wave-field', id: block.id, spacing: block.settings.wave_spacing, amplitude: 6, class: 'product-canvas__field' %}
+    <figure class="product-canvas__canvas">
+      <div class="product-canvas__frame" data-frame>
+        {%- if first_media -%}
+          {{
+            first_media
+            | image_url: width: 1600
+            | image_tag:
+              class: 'product-canvas__image is-active',
+              widths: '700, 1100, 1600, 2000',
+              sizes: '(min-width: 990px) 58vw, 92vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              alt: first_media.alt,
+              data-layer: 'a'
+          }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'product-canvas__image is-active' }}
+        {%- endif -%}
+        <img class="product-canvas__image" alt="" data-layer="b" width="{{ first_media.width | default: 2000 }}" height="{{ first_media.height | default: 1500 }}" hidden>
+        <div class="product-canvas__model" data-model-slot hidden></div>
+      </div>
+      <figcaption class="product-canvas__caption caption" data-caption>
+        {{ v.options[option_index] | escape }}
+      </figcaption>
+    </figure>
+  </div>
+
+  <div
+    class="product-canvas__views"
+    role="group"
+    aria-label="{{ 'products.views_label' | t }}"
+    data-views
+    data-label-model="{{ 'products.view_model' | t }}"
+    data-label-ar="{{ 'products.view_ar' | t }}"
+  ></div>
+
+  {%- for model in models -%}
+    <template data-model-template="{{ model.id }}">
+      {{ model | model_viewer_tag: camera-controls: true, interaction-prompt: 'none', shadow-intensity: '1', exposure: '0.8', tone-mapping: 'neutral', environment-image: 'neutral' }}
+    </template>
+  {%- endfor -%}
+
+  {%- if models.size > 0 -%}
+    <script>
+      window.ShopifyXRModels = {{ models | json }};
+    </script>
+  {%- endif -%}
+</product-canvas>
+
+{% stylesheet %}
+  .product-canvas {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .product-canvas__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    padding: 8% 7%;
+    border: var(--rule) solid var(--ink);
+    overflow: hidden;
+  }
+
+  .product-canvas__field {
+    position: absolute;
+    inset: 0;
+  }
+
+  .product-canvas__canvas {
+    position: relative;
+    display: grid;
+    width: 100%;
+    height: 100%;
+    background: var(--gallery);
+    border: var(--rule) solid var(--ink);
+  }
+
+  .product-canvas__frame {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-canvas__image,
+  .product-canvas__model,
+  .product-canvas__frame > svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out), filter var(--duration-slow) var(--ease-out);
+  }
+
+  .product-canvas__image.is-active,
+  .product-canvas__frame > svg,
+  .product-canvas__model:not([hidden]) {
+    opacity: 1;
+  }
+
+  .product-canvas__image.is-leaving {
+    filter: blur(6px);
+  }
+
+  .product-canvas__model model-viewer {
+    width: 100%;
+    height: 100%;
+    --poster-color: transparent;
+  }
+
+  .product-canvas__caption {
+    position: absolute;
+    inset-inline-start: var(--space-4);
+    inset-block-end: var(--space-3);
+  }
+
+  .product-canvas__views {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .product-canvas__view {
+    min-height: 2.75rem;
+    padding: 0 var(--space-4);
+    border: var(--rule) solid var(--ink);
+    background: var(--gallery);
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--text-small);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+
+  .product-canvas__view[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--gallery);
+  }
+
+  .product-canvas__view:hover:not([aria-pressed='true']) {
+    background: repeating-linear-gradient(0deg, var(--gallery) 0 4px, var(--ink) 4px 5px);
+  }
+
+  .product-canvas__view--ar {
+    margin-inline-start: auto;
+  }
+
+  @media (max-width: 749px) {
+    .product-canvas__stage {
+      aspect-ratio: 1;
+      padding: 9% 6%;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ProductCanvas extends HTMLElement {
+    connectedCallback() {
+      this.media = JSON.parse(this.querySelector('[data-media]').textContent);
+      this.page = this.closest('product-page');
+      this.optionIndex = Number(this.dataset.optionIndex);
+      this.layers = [...this.querySelectorAll('img[data-layer]')];
+      this.front = this.querySelector('.product-canvas__image.is-active') || this.layers[0];
+      this.modelSlot = this.querySelector('[data-model-slot]');
+      this.caption = this.querySelector('[data-caption]');
+      this.field = this.querySelector('wave-field');
+      this.viewBar = this.querySelector('[data-views]');
+      this.value = this.page?.variant?.options[this.optionIndex];
+      this.view = 'angle';
+      this.renderViews();
+      ProductCanvas.setupXR();
+      this.page?.addEventListener('product:variant', (e) => {
+        this.value = e.detail.variant.options[this.optionIndex];
+        this.field?.pulse();
+        this.show(this.view);
+      });
+    }
+
+    viewOf(item) {
+      const alt = (item.alt || '').toLowerCase();
+      if (item.type === 'model') return 'model';
+      if (alt.includes('front')) return 'front';
+      if (alt.includes('side')) return 'side';
+      return 'angle';
+    }
+
+    itemsForValue() {
+      const value = (this.value || '').toLowerCase();
+      const own = this.media.filter((m) => value && (m.alt || '').toLowerCase().includes(value));
+      return own.length ? own : this.media;
+    }
+
+    renderViews() {
+      const items = this.itemsForValue();
+      const views = ['angle', 'front', 'side'].filter((key) => items.some((m) => m.type === 'image' && this.viewOf(m) === key));
+      const labels = { angle: this.dataset.labelAngle, front: this.dataset.labelFront, side: this.dataset.labelSide };
+      const hasModel = items.some((m) => m.type === 'model');
+      this.viewBar.replaceChildren();
+      const add = (key, label, extra = '') => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = `product-canvas__view ${extra}`;
+        b.textContent = label;
+        b.dataset.view = key;
+        b.setAttribute('aria-pressed', String(key === this.view));
+        b.addEventListener('click', () => this.show(key));
+        this.viewBar.append(b);
+        return b;
+      };
+      views.forEach((key) => add(key, labels[key]));
+      if (hasModel) add('model', this.viewBar.dataset.labelModel);
+      if (hasModel && this.supportsAR()) {
+        const ar = add('ar', this.viewBar.dataset.labelAr, 'product-canvas__view--ar');
+        ar.removeAttribute('aria-pressed');
+        ar.addEventListener('click', (e) => {
+          e.stopImmediatePropagation();
+          const model = this.itemsForValue().find((m) => m.type === 'model');
+          if (model && window.ShopifyXR) window.ShopifyXR.launchXR({ model3dId: model.id, title: document.title });
+        }, { capture: true });
+      }
+    }
+
+    static setupXR() {
+      if (ProductCanvas.xrStarted || !window.ShopifyXRModels || !window.Shopify?.loadFeatures) return;
+      ProductCanvas.xrStarted = true;
+      const start = () => {
+        if (!window.ShopifyXR) return document.addEventListener('shopify_xr_initialized', start, { once: true });
+        window.ShopifyXR.addModels(window.ShopifyXRModels);
+        window.ShopifyXR.setupXRElements();
+      };
+      window.Shopify.loadFeatures([{ name: 'shopify-xr', version: '1.0', onLoad: start }]);
+    }
+
+    supportsAR() {
+      const ua = navigator.userAgent;
+      return /iPhone|iPad|Android/i.test(ua);
+    }
+
+    show(view) {
+      if (view === 'ar') return;
+      this.view = view;
+      this.viewBar.querySelectorAll('[data-view]').forEach((b) => {
+        if (b.dataset.view !== 'ar') b.setAttribute('aria-pressed', String(b.dataset.view === view));
+      });
+      const items = this.itemsForValue();
+      this.caption.textContent = this.value || '';
+      if (view === 'model') return this.showModel(items.find((m) => m.type === 'model'));
+      this.hideModel();
+      const item = items.find((m) => m.type === 'image' && this.viewOf(m) === view) || items.find((m) => m.type === 'image');
+      if (item) this.crossfade(item);
+    }
+
+    async crossfade(item) {
+      const back = this.layers.find((l) => l !== this.front);
+      if (this.front.currentSrc && this.front.currentSrc.split('?')[0] === item.src.split('?')[0]) return;
+      back.hidden = false;
+      back.alt = item.alt || '';
+      back.sizes = '(min-width: 990px) 58vw, 92vw';
+      back.srcset = item.srcset;
+      back.src = item.src;
+      try { await back.decode(); } catch (e) {}
+      const leaving = this.front;
+      leaving.classList.add('is-leaving');
+      leaving.classList.remove('is-active');
+      back.classList.add('is-active');
+      this.front = back;
+      setTimeout(() => leaving.classList.remove('is-leaving'), 700);
+    }
+
+    showModel(model) {
+      if (!model) return;
+      const template = this.querySelector(`[data-model-template="${model.id}"]`);
+      if (!template) return;
+      if (this.modelSlot.dataset.modelId !== String(model.id)) {
+        this.modelSlot.replaceChildren(template.content.cloneNode(true));
+        this.modelSlot.dataset.modelId = model.id;
+      }
+      this.modelSlot.hidden = false;
+      this.front.classList.remove('is-active');
+      if (window.Shopify?.loadFeatures && !this.modelUiLoaded) {
+        this.modelUiLoaded = true;
+        window.Shopify.loadFeatures([{ name: 'model-viewer-ui', version: '1.0', onLoad: () => {} }]);
+      }
+    }
+
+    hideModel() {
+      if (this.modelSlot.hidden) return;
+      this.modelSlot.hidden = true;
+      this.front.classList.add('is-active');
+    }
+  }
+
+  if (!customElements.get('product-canvas')) customElements.define('product-canvas', ProductCanvas);
+
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:blocks.product_canvas",
+  "settings": [
+    {
+      "type": "text",
+      "id": "option_name",
+      "label": "t:labels.option_name",
+      "info": "t:info.canvas_option",
+      "default": "Fabric"
+    },
+    {
+      "type": "range",
+      "id": "wave_spacing",
+      "label": "t:labels.wave_spacing",
+      "min": 6,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    }
+  ],
+  "presets": [{ "name": "t:blocks.product_canvas" }]
+}
+{% endschema %}

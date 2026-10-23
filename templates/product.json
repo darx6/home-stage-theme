@@ -1,17 +1,95 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "settings": {
+        "gap": 72
+      },
+      "blocks": {
+        "details": {
+          "type": "product-column",
+          "settings": {
+            "gap": 32,
+            "sticky": false
+          },
+          "blocks": {
+            "title": {
+              "type": "product-title",
+              "settings": {
+                "subtitle": "Two-seat sofa, made to order"
+              }
+            },
+            "price": {
+              "type": "product-price",
+              "settings": {
+                "show_tax_note": true
+              }
+            },
+            "buy": {
+              "type": "buy-buttons",
+              "settings": {
+                "show_dynamic_checkout": false
+              }
+            },
+            "lead_time": {
+              "type": "lead-time",
+              "settings": {}
+            },
+            "dimensions": {
+              "type": "dimensions",
+              "settings": {
+                "room_width": 12,
+                "room_depth": 10
+              }
+            },
+            "description": {
+              "type": "product-description",
+              "settings": {
+                "heading": "",
+                "open": true
+              }
+            }
+          },
+          "block_order": [
+            "title",
+            "price",
+            "buy",
+            "lead_time",
+            "dimensions",
+            "description"
+          ]
+        },
+        "stage": {
+          "type": "product-column",
+          "settings": {
+            "gap": 28,
+            "sticky": true
+          },
+          "blocks": {
+            "canvas": {
+              "type": "product-canvas",
+              "settings": {
+                "option_name": "Fabric",
+                "wave_spacing": 13
+              }
+            },
+            "fabrics": {
+              "type": "fabric-picker",
+              "settings": {
+                "option_name": "Fabric"
+              }
+            }
+          },
+          "block_order": [
+            "canvas",
+            "fabrics"
+          ]
+        }
+      },
+      "block_order": [
+        "details",
+        "stage"
+      ]
     }
   },
   "order": [

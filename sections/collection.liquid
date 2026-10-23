@@ -10,6 +10,7 @@
 <div class="collection-products">
   {% paginate collection.products by 20 %}
     {% for product in collection.products %}
+      {%- if product.tags contains 'sample' -%}{%- continue -%}{%- endif -%}
       <div class="collection-product">
         {% if product.featured_image %}
           {% render 'image',

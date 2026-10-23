@@ -1,4 +1,10 @@
 {
+  "general": {
+    "menu": "Main menu",
+    "footer_menu": "Footer menu",
+    "payment_methods": "Payment methods",
+    "concept_note": "HomeStage is a concept store that demonstrates product page design for home and furniture brands. Products are 3D renders and orders are not fulfilled."
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",
@@ -48,5 +54,54 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "products": {
+    "sale_price": "Sale price",
+    "regular_price": "Regular price",
+    "tax_note": "Taxes and delivery calculated at checkout.",
+    "views_label": "Views",
+    "view_angle": "Angle",
+    "view_front": "Front",
+    "view_side": "Side",
+    "view_model": "3D",
+    "view_ar": "View in your room",
+    "render_note": "3D render",
+    "fabric_count": {
+      "one": "{{ count }} fabric",
+      "other": "{{ count }} fabrics"
+    },
+    "material": "Material",
+    "care": "Care",
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "order_sample": "Order a sample",
+    "sample_note": "See the colour and feel the cloth at home first. Samples are {{ price }} each.",
+    "sample_added": "Sample of %s added to your cart.",
+    "sample_error": "The sample couldn't be added. Please try again.",
+    "view_cart": "View cart",
+    "made_to_order": "Made to order",
+    "lead_time_single": "Ships in {{ weeks }} weeks",
+    "lead_time_range": "Ships in {{ min }}–{{ max }} weeks",
+    "arrival_window": "Ordered today, it arrives",
+    "dimensions": "Dimensions",
+    "units": "Units",
+    "width_short": "W",
+    "depth_short": "D",
+    "height_short": "H",
+    "dim_piece": "The piece",
+    "dim_room": "In a room",
+    "dim_fit": "Will it fit?",
+    "front_view": "Front",
+    "side_view": "Side",
+    "drawing_note": "Outline drawings for overall size only, not the exact shape.",
+    "plan_label": "Floor plan of a {{ width }} × {{ depth }} ft room",
+    "walkway": "30 in walkway",
+    "fit_space": "Wall space for the sofa",
+    "fit_door": "Narrowest doorway on the way in",
+    "fit_yes": "Fits the wall, with %s to spare.",
+    "fit_too_wide": "Too wide for this wall by %s.",
+    "door_yes": "Goes through the doorway on its side (needs %s).",
+    "door_no": "Won't pass this doorway: it needs at least %s.",
+    "about": "About this piece"
   }
 }
