@@ -17,7 +17,7 @@ OWN-WORLD: Gallery white #FFFFFF and matte ink #000000 only; no greys, tone made
 
 STORY: The owner sees a sofa page that looks like nothing else in their category, picks a fabric, sees it fit and arrive, and understands this is what their own store could do.
 
-FIRST VIEWPORT: Left third: the model name in tall condensed caps over three lines, the lower part of each line sliced into horizontal ink lines, price beneath, Add to cart (ink, line-hatched) and Order a sample (outlined) as the primary pair. Centre and right: the sofa render hung as a canvas on a 2:1 wave-field stage; under it the view controls and the fabric range as numbered canvases with names, all above the fold at 1440x900. A thin line on mobile stacks name, canvas, fabrics, actions.
+FIRST VIEWPORT: Left third: the model name in tall condensed caps over three lines, price beneath, Add to cart (ink, line-hatched) and Order a sample (outlined) as the primary pair. Centre and right: the sofa render hung as a canvas on a 2:1 wave-field stage; under it the view controls and the fabric range as numbered canvases with names, all above the fold at 1440x900. A thin line on mobile stacks name, canvas, fabrics, actions.
 
 FORM: Riley op-art gallery (catalog design-canon-riley-moire-gallery), chosen by the user over grounded list position 5 (modernist catalogue). seed:716f9b8d0745fb4e. Signature interaction: choosing a fabric tightens the wave field around the canvas and dissolves the photo to the new fabric; the dimensions block reads at near, mid and far distances (sofa, sofa in a room outline, room fit check); lead time is a line field whose frequency compresses through the making stages. No moiré on product photos. prefers-reduced-motion freezes all fields.
 

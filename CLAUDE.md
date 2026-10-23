@@ -1,7 +1,7 @@
 # HomeStage — home & interiors demo theme
 
 ## Goal
-A demo store for home and furniture brands that shows our fixed-price product page upgrade: swatches with "order a sample", a dimensions block, lead-time messaging, a 3D/AR product viewer and crafted motion. Three product pages share the same sections: **sofa** (first), **linen bedding**, **ceramics**. Built to Theme Store standards so it can later become a sellable home & interiors theme. Design direction lives in `docs/DESIGN.md` once it exists; follow it.
+A demo store for home and furniture brands that shows our fixed-price product page upgrade: swatches with "order a sample", a dimensions block, lead-time messaging, a 3D/AR product viewer and crafted motion. Three product pages share the same sections: **sofa** (first), **linen bedding**, **ceramics**. Built to Theme Store standards so it can later become a sellable home & interiors theme. The design system lives in `DESIGN.md` at the project root (product context in `PRODUCT.md`); follow it.
 
 ## Store and tooling
 - Dev store: `homestage-uqutijpv.myshopify.com` (default in `shopify.theme.toml`). Products are our own demo products, not Shopify test data.

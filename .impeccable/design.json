@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T12:57:47+00:00",
+  "title": "Design System: HomeStage",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Matte Ink",
+        "canonical": "#000000",
+        "source": "settings.foreground_color -> --color-foreground -> --ink",
+        "tonalRamp": [
+          "#000000",
+          "#1f1f1f",
+          "#3b3b3b",
+          "#5e5e5e",
+          "#858585",
+          "#acacac",
+          "#d4d4d4",
+          "#ffffff"
+        ],
+        "note": "Ramp is reference only; the system forbids greys. Intermediate tones are made by line frequency."
+      },
+      "gallery": {
+        "role": "neutral",
+        "displayName": "Gallery White",
+        "canonical": "#FFFFFF",
+        "source": "settings.background_color -> --color-background -> --gallery",
+        "tonalRamp": [
+          "#000000",
+          "#1f1f1f",
+          "#3b3b3b",
+          "#5e5e5e",
+          "#858585",
+          "#acacac",
+          "#d4d4d4",
+          "#ffffff"
+        ],
+        "note": "Ramp is reference only; the system forbids greys."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Product name, once per page; uppercase, balanced, max 9ch. Font from settings.type_display_font (big_shoulders_n8)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Display-face statements such as lead-time weeks; dimension summary at 1.75rem."
+      },
+      "title": {
+        "displayName": "Price",
+        "purpose": "Price in display face with tabular lining numerals."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text, max 65ch. Font from settings.type_body_font (schibsted_grotesk_n4); bold 700 for emphasis."
+      },
+      "body-small": {
+        "displayName": "Body small",
+        "purpose": "Detail text: arrival window, stage names, material and care, field labels."
+      },
+      "label": {
+        "displayName": "Caption",
+        "purpose": "Uppercase tracked label voice for nav, legends, figure captions, toggles and buttons (buttons 700)."
+      }
+    },
+    "shadows": [],
+    "lines": [
+      {
+        "name": "rule",
+        "value": "2px",
+        "purpose": "Every structural line: frames, dividers, borders, focus outlines, selected underlines."
+      },
+      {
+        "name": "hatch",
+        "value": "repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 5px)",
+        "purpose": "End caps on buttons and fields."
+      },
+      {
+        "name": "wave-stage",
+        "value": "wave-field spacing 13px, amplitude 6px, wavelength 160px",
+        "purpose": "Field behind the product canvas; merchant setting 6-24px."
+      },
+      {
+        "name": "wave-footer",
+        "value": "wave-field spacing 6px, amplitude 2px, wavelength 90px",
+        "purpose": "3rem footer band."
+      },
+      {
+        "name": "line-wide / line-medium / line-fine / line-ultra",
+        "value": "14px / 9px / 5px / 3px",
+        "purpose": "Declared in critical.css as the frequency ladder; not yet referenced by any component."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default easing for crossfades and small state changes."
+      },
+      {
+        "name": "duration-quick",
+        "value": "180ms",
+        "purpose": "Hover fills, toggles, disclosure cap."
+      },
+      {
+        "name": "duration-slow",
+        "value": "700ms",
+        "purpose": "Product image crossfade (opacity plus 6px blur on the leaving image)."
+      },
+      {
+        "name": "wave-pulse",
+        "value": "ratio 0.45, 900ms, sine in-out via requestAnimationFrame",
+        "purpose": "Wave field tightens and relaxes on every variant change; skipped under prefers-reduced-motion."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation and transition durations 0.01ms",
+        "purpose": "Global freeze under prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "750px"
+      },
+      {
+        "name": "lg",
+        "value": "990px"
+      }
+    ],
+    "layout": {
+      "pageWidth": "110rem (90rem narrow)",
+      "pageMargin": "32px default (12-80px)",
+      "productGrid": "4fr 7fr from 990px, gap 72px default",
+      "focus": "2px ink outline, 3px offset"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Add to cart: ink fill with a gallery-hatched end cap; hover turns the fill into a line field.",
+      "html": "<button class=\"ds-btn\">Add to cart</button>",
+      "css": ":host{--ink:#000;--gallery:#fff;--rule:2px;--hatch:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px);--ease-out:cubic-bezier(0.16,1,0.3,1);--duration-quick:180ms;font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);background:var(--gallery);} .ds-btn{position:relative;display:inline-flex;align-items:center;min-height:3.5rem;padding:0 2.75rem 0 1rem;border:2px solid var(--ink);border-radius:0;background:var(--ink);color:var(--gallery);font:inherit;font-size:0.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;cursor:pointer;transition:background-color 180ms linear,color 180ms linear;} .ds-btn::after{content:'';position:absolute;inset-block:0;inset-inline-end:0;width:1.75rem;border-inline-start:2px solid var(--gallery);background:repeating-linear-gradient(90deg,var(--gallery) 0 2px,transparent 2px 5px);} .ds-btn:hover{background:repeating-linear-gradient(0deg,var(--ink) 0 3px,var(--gallery) 3px 4px);} .ds-btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Order a sample: gallery fill, ink frame, ink-hatched end cap.",
+      "html": "<button class=\"ds-btn-outline\">Order a sample</button>",
+      "css": ":host{--ink:#000;--gallery:#fff;--rule:2px;--hatch:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px);--ease-out:cubic-bezier(0.16,1,0.3,1);--duration-quick:180ms;font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);background:var(--gallery);} .ds-btn-outline{position:relative;display:inline-flex;align-items:center;min-height:3.5rem;padding:0 2.75rem 0 1rem;border:2px solid var(--ink);border-radius:0;background:var(--gallery);color:var(--ink);font:inherit;font-size:0.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;cursor:pointer;} .ds-btn-outline::after{content:'';position:absolute;inset-block:0;inset-inline-end:0;width:1.75rem;border-inline-start:2px solid var(--ink);background:var(--hatch);} .ds-btn-outline:hover{background:repeating-linear-gradient(0deg,var(--gallery) 0 4px,var(--ink) 4px 5px);} .ds-btn-outline:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}"
+    },
+    {
+      "name": "View Toggles",
+      "kind": "chip",
+      "refersTo": "toggle",
+      "description": "Square label-voice toggles; selected inverts to solid ink, hover lays 1px lines every 5px.",
+      "html": "<div class=\"ds-toggles\"><button class=\"ds-toggle\" aria-pressed=\"true\">Angle</button><button class=\"ds-toggle\" aria-pressed=\"false\">Front</button><button class=\"ds-toggle\" aria-pressed=\"false\">Side</button><button class=\"ds-toggle\" aria-pressed=\"false\">3D</button></div>",
+      "css": ":host{--ink:#000;--gallery:#fff;--rule:2px;--hatch:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px);--ease-out:cubic-bezier(0.16,1,0.3,1);--duration-quick:180ms;font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);background:var(--gallery);} .ds-toggles{display:flex;gap:0.5rem;} .ds-toggle{min-height:2.75rem;padding:0 1rem;border:2px solid var(--ink);border-radius:0;background:var(--gallery);color:var(--ink);font:inherit;font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.14em;cursor:pointer;} .ds-toggle[aria-pressed='true']{background:var(--ink);color:var(--gallery);} .ds-toggle:hover:not([aria-pressed='true']){background:repeating-linear-gradient(0deg,var(--gallery) 0 4px,var(--ink) 4px 5px);} .ds-toggle:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}"
+    },
+    {
+      "name": "Unit Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Square 2px frame with a hatched unit end cap; focus outlines the whole field.",
+      "html": "<label class=\"ds-label\">Room width<div class=\"ds-field\"><input value=\"144\" inputmode=\"decimal\"><span class=\"ds-field__unit\"><span>in</span></span></div></label>",
+      "css": ":host{--ink:#000;--gallery:#fff;--rule:2px;--hatch:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px);--ease-out:cubic-bezier(0.16,1,0.3,1);--duration-quick:180ms;font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);background:var(--gallery);} .ds-label{display:grid;gap:0.5rem;font-size:0.9375rem;} .ds-field{display:flex;align-items:stretch;border:2px solid var(--ink);} .ds-field input{flex:1;min-width:0;min-height:3rem;padding:0 1rem;border:0;border-radius:0;background:transparent;color:inherit;font:inherit;} .ds-field input:focus-visible{outline:none;} .ds-field:focus-within{outline:2px solid var(--ink);outline-offset:3px;} .ds-field__unit{display:flex;align-items:center;padding:0 0.75rem;border-inline-start:2px solid var(--ink);background:var(--hatch);font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.14em;} .ds-field__unit span{padding:0 0.25rem;background:var(--gallery);}"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "refersTo": "header",
+      "description": "Display wordmark, label-voice links, 2px rule beneath; current link takes a 2px underline.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-nav__name\" href=\"#\">HomeStage</a><nav class=\"ds-nav__menu\"><a href=\"#\" aria-current=\"page\">Home</a><a href=\"#\">Catalog</a><a href=\"#\">Contact</a></nav></header>",
+      "css": ":host{--ink:#000;--gallery:#fff;--rule:2px;--hatch:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px);--ease-out:cubic-bezier(0.16,1,0.3,1);--duration-quick:180ms;font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);background:var(--gallery);} .ds-nav{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2rem;min-height:4.5rem;border-bottom:2px solid var(--ink);} .ds-nav__name{font-family:'Big Shoulders',sans-serif;font-weight:800;font-size:2rem;line-height:0.88;text-transform:uppercase;color:inherit;text-decoration:none;} .ds-nav__menu{display:flex;gap:1.5rem;} .ds-nav__menu a{color:inherit;text-decoration:none;padding-block:0.5rem;font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.14em;} .ds-nav__menu a[aria-current='page'],.ds-nav__menu a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:0.45em;} .ds-nav a:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}"
+    },
+    {
+      "name": "Fabric Canvas",
+      "kind": "custom",
+      "refersTo": "fabric-canvas",
+      "description": "Numbered swatch canvas: 2px frame on a 7px mount that takes a line field on hover and selection; name bold and underlined when chosen.",
+      "html": "<div class=\"ds-fabrics\"><label class=\"ds-fabric\"><input type=\"radio\" name=\"f\" checked><span class=\"ds-fabric__mount\"><span class=\"ds-fabric__canvas\" style=\"--swatch:#2f4f9a\"></span></span><span class=\"ds-fabric__no\">No. 01</span><span class=\"ds-fabric__name\">Cobalt wool</span></label><label class=\"ds-fabric\"><input type=\"radio\" name=\"f\"><span class=\"ds-fabric__mount\"><span class=\"ds-fabric__canvas\" style=\"--swatch:#b08a2e\"></span></span><span class=\"ds-fabric__no\">No. 03</span><span class=\"ds-fabric__name\">Ochre velvet</span></label></div>",
+      "css": ":host{--ink:#000;--gallery:#fff;--rule:2px;--hatch:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px);--ease-out:cubic-bezier(0.16,1,0.3,1);--duration-quick:180ms;font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);background:var(--gallery);} .ds-fabrics{display:flex;gap:0.75rem;} .ds-fabric{display:grid;gap:0.5rem;width:7rem;cursor:pointer;line-height:1.25;} .ds-fabric input{position:absolute;opacity:0;width:1px;height:1px;} .ds-fabric__mount{display:block;padding:7px;} .ds-fabric:hover .ds-fabric__mount{background:repeating-linear-gradient(0deg,var(--ink) 0 1px,transparent 1px 6px);} .ds-fabric input:checked + .ds-fabric__mount{background:repeating-linear-gradient(0deg,var(--ink) 0 2px,transparent 2px 4px);} .ds-fabric input:focus-visible + .ds-fabric__mount{outline:2px solid var(--ink);outline-offset:3px;} .ds-fabric__canvas{display:block;aspect-ratio:1;background:var(--swatch);border:2px solid var(--ink);} .ds-fabric__no{font-size:0.8125rem;letter-spacing:0.1em;text-transform:uppercase;font-variant-numeric:tabular-nums lining-nums;} .ds-fabric input:checked ~ .ds-fabric__name{font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:0.3em;}"
+    },
+    {
+      "name": "Lead Time Strips",
+      "kind": "custom",
+      "refersTo": "lead-time",
+      "description": "Making stages as line strips whose gap tightens toward completion.",
+      "html": "<div class=\"ds-lead\"><p class=\"ds-lead__weeks\">Made and delivered in 6–8 weeks</p><ol class=\"ds-lead__stages\"><li style=\"--g:9px\"><span></span>Frame built and joined</li><li style=\"--g:7px\"><span></span>Springs and webbing fitted</li><li style=\"--g:5px\"><span></span>Upholstered in your fabric</li><li style=\"--g:3px\"><span></span>Finished and inspected</li></ol></div>",
+      "css": ":host{--ink:#000;--gallery:#fff;--rule:2px;--hatch:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 5px);--ease-out:cubic-bezier(0.16,1,0.3,1);--duration-quick:180ms;font-family:'Schibsted Grotesk',sans-serif;color:var(--ink);background:var(--gallery);} .ds-lead{display:grid;gap:0.5rem;padding-top:1rem;border-top:2px solid var(--ink);} .ds-lead__weeks{font-family:'Big Shoulders',sans-serif;font-weight:800;font-size:2rem;line-height:1;text-transform:uppercase;margin:0;} .ds-lead__stages{list-style:none;padding:0;margin:1rem 0 0;display:grid;gap:0.5rem;} .ds-lead__stages li{display:grid;grid-template-columns:5.5rem 1fr;align-items:center;gap:1rem;font-size:0.9375rem;} .ds-lead__stages span{height:1.25rem;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px var(--g));}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Op-Art Gallery",
+    "overview": "A white gallery where the interface is drawn in black line fields and the product hangs as the only colour in the room. Every surface of the theme is one of two materials, gallery white and matte ink, and every tone between them is made by how closely ink lines are spaced, never by a grey. The product image is framed like a canvas on a wall of parallel waves; fabric swatches are a row of small numbered canvases; lead time is a set of line strips whose frequency compresses as the piece nears completion.\n\nDensity is calm and gallery-like: generous vertical spacing, square frames, 2px ink rules separating every block, and one monumental type moment per page (the product name in tall condensed caps). Ornament is never added on top of the system; hover, selection and progress are all expressed by changing line frequency within the same two colours.\n\nThe world refuses the cream-serif furniture page and the photo-left, form-right template. Colour belongs to the merchant's goods, so the interface never competes with it.",
+    "keyCharacteristics": [
+      "Two colours only: gallery white and ink black, both merchant settings.",
+      "Tone, emphasis and state made by line frequency (hatching, wave fields, line strips).",
+      "2px ink rules and square frames; no radius, no shadow.",
+      "Colour appears only in product photography and fabric swatches.",
+      "Tall condensed display caps over a neutral grotesk body and small tracked caps for labels.",
+      "Motion is a single gesture: the wave field tightens and relaxes while the photo dissolves."
+    ],
+    "rules": [
+      {
+        "name": "The Two Materials Rule",
+        "body": "The interface uses `--ink` and `--gallery` and nothing else. No greys, no tints, no alpha overlays for tone. If a surface needs to read darker or lighter, change the spacing of ink lines over it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Product Is The Accent Rule",
+        "body": "Colour enters the page only through product photography, the 3D model, and fabric swatch images or swatch colours (`--swatch` from the fabric entry). Never colour a button, badge, link or state.",
+        "section": "colors"
+      },
+      {
+        "name": "The Line Frequency Rule",
+        "body": "Tone is a frequency: wide spacing reads light, tight spacing reads dark. The shipped vocabulary: wave stage behind the product at 13px spacing (merchant setting, 6 to 24px); footer band at 6px; button and field end-cap hatch at 2px ink every 5px; button hover at 3px ink every 4px (outline variant 1px ink every 5px); swatch hover 1px every 6px, selected 2px every 4px; lead-time strips 2px ink with a gap that shrinks by 2px per stage down to 3px.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Monument Rule",
+        "body": "One display-size type moment per page: the product name. Every other display-face use is 2.5rem or smaller.",
+        "section": "typography"
+      },
+      {
+        "name": "The Numbers Line Up Rule",
+        "body": "Prices, counts, fabric numbers and dates use tabular lining numerals (`.numerals`).",
+        "section": "typography"
+      },
+      {
+        "name": "The Frame Not Shadow Rule",
+        "body": "Separate and lift with a 2px ink frame and a change of line field, never with a shadow or a tint.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** build every new surface from `--ink` and `--gallery` only, and make tone with line spacing.",
+      "**Do** use the 2px `--rule` for frames, dividers, borders and focus; keep 1px for drawing detail.",
+      "**Do** end buttons and fields with the hatched end cap (2px ink every 5px behind a 2px divider).",
+      "**Do** show state by changing line frequency or by inverting to solid ink, never by colour.",
+      "**Do** give every swatch a visible number and name, and keep the selected name bold and underlined.",
+      "**Do** use the 2px ink outline at 3px offset for every focus state, and keep targets at least 2.5rem (44px for icon links).",
+      "**Do** route motion through `--ease-out` with `--duration-quick` (180ms) or `--duration-slow` (700ms), and stop all fields and transitions under `prefers-reduced-motion`.",
+      "**Do** keep upgrade blocks self-contained: their own `{% stylesheet %}` and `{% javascript %}`, content from product metafields (`homestage.fabrics`, width/depth/height, lead-time weeks, making stages, sample product, outline drawings)."
+    ],
+    "donts": [
+      "**Don't** introduce greys, tints, gradients or alpha overlays to make tone.",
+      "**Don't** colour any interface element; colour belongs to product photos and swatches.",
+      "**Don't** add border radius or box shadows.",
+      "**Don't** lay moiré or line fields over product photography; fields sit around the canvas, never on it.",
+      "**Don't** set more than one display-size type moment per page.",
+      "**Don't** animate prices, or animate anything that hides content without a reduced-motion fallback."
+    ]
+  }
+}
