@@ -95,6 +95,7 @@
     "front_view": "Front",
     "side_view": "Side",
     "drawing_note": "Outline drawings for overall size only, not the exact shape.",
+    "outline_note": "Silhouettes traced from the 3D model at true proportions.",
     "plan_label": "Floor plan of a {{ width }} × {{ depth }} ft room",
     "walkway": "30 in walkway",
     "fit_space": "Wall space for the sofa",

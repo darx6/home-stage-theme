@@ -57,7 +57,7 @@
   </script>
 
   <div class="product-canvas__stage">
-    {% render 'wave-field', id: block.id, spacing: block.settings.wave_spacing, amplitude: 6, drift: 14, class: 'product-canvas__field' %}
+    {% render 'wave-field', id: block.id, spacing: block.settings.wave_spacing, amplitude: 6, class: 'product-canvas__field' %}
     <figure class="product-canvas__canvas">
       <div class="product-canvas__frame" data-frame>
         {%- if first_media -%}

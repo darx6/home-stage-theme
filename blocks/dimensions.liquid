@@ -11,8 +11,8 @@
   assign mw = p.metafields.homestage.width.value
   assign md = p.metafields.homestage.depth.value
   assign mh = p.metafields.homestage.height.value
-  assign drawing_front = p.metafields.homestage.drawing_front.value
-  assign drawing_side = p.metafields.homestage.drawing_side.value
+  assign outline_front = p.metafields.homestage.outline_front.value
+  assign outline_side = p.metafields.homestage.outline_side.value
 -%}
 {%- if mw and md and mh -%}
   {%- liquid
@@ -93,24 +93,33 @@
     </div>
 
     <div class="dimensions__panel" role="tabpanel" id="{{ uid }}-piece" aria-labelledby="{{ uid }}-tab-piece">
-      {%- if drawing_front and drawing_side -%}
+      {%- if outline_front and outline_side -%}
+        {%- liquid
+          assign front_ratio = outline_front.width | times: 1.0 | divided_by: outline_front.height
+          assign side_ratio = outline_side.width | times: 1.0 | divided_by: outline_side.height
+        -%}
         <div class="dimensions__drawings dimensions__drawings--traced">
-          <figure class="dim-figure dim-figure--front" style="--grow: {{ drawing_front.aspect_ratio }};">
+          <figure class="dim-figure dim-figure--front" style="--grow: {{ front_ratio }};">
             <div class="dim-figure__art">
               <span class="dim-figure__height numerals"><span data-len="{{ h }}"></span></span>
-              {{ drawing_front | image_url: width: 1200 | image_tag: alt: drawing_front.alt, loading: 'lazy', widths: '600, 900, 1200', sizes: '(min-width: 990px) 22vw, 60vw' }}
+              <svg viewBox="0 0 {{ outline_front.width }} {{ outline_front.height }}" role="img" aria-label="{{ 'products.front_view' | t }}">
+                <path d="{{ outline_front.d }}" />
+              </svg>
               <span class="dim-figure__width numerals"><span data-len="{{ w }}"></span></span>
             </div>
             <figcaption class="caption">{{ 'products.front_view' | t }}</figcaption>
           </figure>
-          <figure class="dim-figure" style="--grow: {{ drawing_side.aspect_ratio }};">
+          <figure class="dim-figure" style="--grow: {{ side_ratio }};">
             <div class="dim-figure__art">
-              {{ drawing_side | image_url: width: 600 | image_tag: alt: drawing_side.alt, loading: 'lazy', widths: '300, 600', sizes: '(min-width: 990px) 10vw, 30vw' }}
+              <svg viewBox="0 0 {{ outline_side.width }} {{ outline_side.height }}" role="img" aria-label="{{ 'products.side_view' | t }}">
+                <path d="{{ outline_side.d }}" />
+              </svg>
               <span class="dim-figure__width numerals"><span data-len="{{ d }}"></span></span>
             </div>
             <figcaption class="caption">{{ 'products.side_view' | t }}</figcaption>
           </figure>
         </div>
+        <p class="dimensions__note">{{ 'products.outline_note' | t }}</p>
       {%- else -%}
       <div class="dimensions__drawings">
         <figure>
@@ -161,8 +170,8 @@
           <figcaption class="caption">{{ 'products.side_view' | t }}</figcaption>
         </figure>
       </div>
+        <p class="dimensions__note">{{ 'products.drawing_note' | t }}</p>
       {%- endif -%}
-      <p class="dimensions__note">{{ 'products.drawing_note' | t }}</p>
     </div>
 
     <div class="dimensions__panel" role="tabpanel" id="{{ uid }}-room" aria-labelledby="{{ uid }}-tab-room" hidden>
@@ -301,9 +310,19 @@
     padding-inline-start: var(--space-5);
   }
 
-  .dim-figure__art img {
+  .dim-figure__art svg {
+    display: block;
     width: 100%;
     height: auto;
+    overflow: visible;
+  }
+
+  .dim-figure__art path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
   }
 
   .dim-figure__width,
