@@ -24,14 +24,13 @@
     data-max-weeks="{{ max_weeks }}"
     {{ block.shopify_attributes }}
   >
-    <h2 class="lead-time__title caption">{{ 'products.made_to_order' | t }}</h2>
-    <p class="lead-time__weeks">
+    <h2 class="lead-time__weeks">
       {%- if min_weeks == max_weeks -%}
         {{ 'products.lead_time_single' | t: weeks: min_weeks }}
       {%- else -%}
         {{ 'products.lead_time_range' | t: min: min_weeks, max: max_weeks }}
       {%- endif -%}
-    </p>
+    </h2>
     <p class="lead-time__arrival">
       {{ 'products.arrival_window' | t }}
       <span class="numerals" data-arrival>

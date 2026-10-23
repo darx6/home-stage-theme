@@ -13,7 +13,7 @@ FABRICS = json.load(open(os.path.join(ROOT, "fabrics.json")))
 NS = "homestage"
 MATERIAL = {
     "cobalt-wool": ("Dense woven wool", "Vacuum weekly. Spot clean with a damp cloth; do not rub."),
-    "moss-boucle": ("Looped wool-blend bouclé", "Vacuum gently with a brush head. Trim loose loops, never pull them."),
+    "moss-boucle": ("Wool houndstooth tweed", "Vacuum with a brush head. Spot clean with a damp cloth; do not rub."),
     "ochre-velvet": ("Cotton velour velvet", "Brush with the pile. Steam lightly to lift pressure marks."),
     "oatmeal-linen": ("Washed rough linen", "Vacuum weekly. Blot spills straight away; professional clean only."),
     "charcoal-herringbone": ("Wool-poly herringbone", "Vacuum weekly. Spot clean with mild soap and water."),
@@ -51,6 +51,8 @@ def define_types():
         ("lead_time_max_weeks", "Lead time to (weeks)", "number_integer", []),
         ("making_stages", "Making stages", "list.single_line_text_field", []),
         ("sample_product", "Sample product", "product_reference", []),
+        ("drawing_front", "Front drawing", "file_reference", [{"name": "file_type_options", "value": json.dumps(["Image"])}]),
+        ("drawing_side", "Side drawing", "file_reference", [{"name": "file_type_options", "value": json.dumps(["Image"])}]),
     ]
     for key, name, typ, validations in fields:
         check(gql("""mutation CreateFieldDef($definition: MetafieldDefinitionInput!) {
@@ -68,7 +70,7 @@ def create_fabrics():
     existing = gql("""query { metaobjects(type: "homestage_fabric", first: 50) { nodes { handle field(key: "swatch") { value } } } }""",
                    mutate=False)["metaobjects"]["nodes"]
     have = {m["handle"]: m["field"]["value"] for m in existing if m["field"]}
-    if all(f["slug"] in have for f in FABRICS):
+    if all(f["slug"] in have for f in FABRICS) and "--new-swatches" not in sys.argv:
         ids = [have[f["slug"]] for f in FABRICS]
     else:
         ids = new_swatch_files(paths)
@@ -158,6 +160,17 @@ def create_linden(gids, sample_id):
     r_urls = upload(list(renders.values()), "IMAGE")
     m_urls = upload(list(models.values()), "MODEL_3D")
 
+    print("Drawings")
+    drawings = {v: os.path.join(ROOT, "drawings", f"drawing_{v}.png") for v in ("front", "side")}
+    d_urls = upload(list(drawings.values()), "IMAGE")
+    created = gql("""mutation Files($files: [FileCreateInput!]!) {
+      fileCreate(files: $files) { files { id fileStatus alt } userErrors { field message code } }}""",
+        {"files": [{"originalSource": d_urls[drawings[v]], "contentType": "IMAGE",
+                    "alt": f"Linden two-seat sofa, {v} outline drawing"} for v in ("front", "side")]})["fileCreate"]
+    check(created, "fileCreate drawings")
+    drawing_ids = dict(zip(("front", "side"), [x["id"] for x in created["files"]]))
+    wait_files_ready(list(drawing_ids.values()))
+
     print("Linden product")
     options, variants = option_and_variants("2180.00", "HS-LINDEN",
                                             lambda f: r_urls[renders[(f["slug"], "34")]])
@@ -177,6 +190,8 @@ def create_linden(gids, sample_id):
         {"namespace": NS, "key": "lead_time_max_weeks", "type": "number_integer", "value": "8"},
         {"namespace": NS, "key": "making_stages", "type": "list.single_line_text_field", "value": json.dumps(STAGES)},
         {"namespace": NS, "key": "sample_product", "type": "product_reference", "value": sample_id},
+        {"namespace": NS, "key": "drawing_front", "type": "file_reference", "value": drawing_ids["front"]},
+        {"namespace": NS, "key": "drawing_side", "type": "file_reference", "value": drawing_ids["side"]},
     ]
     return product_set({
         "title": "Linden two-seat sofa", "handle": "linden-sofa", "vendor": "HomeStage", "productType": "Sofa",

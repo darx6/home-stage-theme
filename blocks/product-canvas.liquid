@@ -57,7 +57,7 @@
   </script>
 
   <div class="product-canvas__stage">
-    {% render 'wave-field', id: block.id, spacing: block.settings.wave_spacing, amplitude: 6, class: 'product-canvas__field' %}
+    {% render 'wave-field', id: block.id, spacing: block.settings.wave_spacing, amplitude: 6, drift: 14, class: 'product-canvas__field' %}
     <figure class="product-canvas__canvas">
       <div class="product-canvas__frame" data-frame>
         {%- if first_media -%}
@@ -78,6 +78,11 @@
         {%- endif -%}
         <img class="product-canvas__image" alt="" data-layer="b" width="{{ first_media.width | default: 2000 }}" height="{{ first_media.height | default: 1500 }}" hidden>
         <div class="product-canvas__model" data-model-slot hidden></div>
+        <svg class="product-canvas__turn" viewBox="0 0 120 40" aria-hidden="true" focusable="false">
+          <path d="M14 26 C34 6, 86 6, 106 26" />
+          <path d="M14 26 l10 -2 M14 26 l2 -10" />
+          <path d="M106 26 l-10 -2 M106 26 l-2 -10" />
+        </svg>
       </div>
       <figcaption class="product-canvas__caption caption" data-caption>
         {{ v.options[option_index] | escape }}
@@ -92,11 +97,13 @@
     data-views
     data-label-model="{{ 'products.view_model' | t }}"
     data-label-ar="{{ 'products.view_ar' | t }}"
+    data-label-ar-desktop="{{ 'products.view_ar_desktop' | t }}"
+    data-caption-model="{{ 'products.model_caption' | t }}"
   ></div>
 
   {%- for model in models -%}
     <template data-model-template="{{ model.id }}">
-      {{ model | model_viewer_tag: camera-controls: true, interaction-prompt: 'none', shadow-intensity: '1', exposure: '0.8', tone-mapping: 'neutral', environment-image: 'neutral', camera-orbit: '-28deg 78deg auto', field-of-view: '22deg' }}
+      {{ model | model_viewer_tag: camera-controls: true, interaction-prompt: 'none', shadow-intensity: '1', exposure: '0.8', tone-mapping: 'neutral', environment-image: 'neutral', camera-orbit: '38deg 72deg auto', field-of-view: '22deg' }}
     </template>
   {%- endfor -%}
 
@@ -117,8 +124,8 @@
     position: relative;
     display: grid;
     place-items: center;
-    aspect-ratio: 4 / 3;
-    padding: 8% 7%;
+    aspect-ratio: 2 / 1;
+    padding: 5% 9%;
     border: var(--rule) solid var(--ink);
     overflow: hidden;
   }
@@ -143,8 +150,7 @@
   }
 
   .product-canvas__image,
-  .product-canvas__model,
-  .product-canvas__frame > svg {
+  .product-canvas__model {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -155,7 +161,6 @@
   }
 
   .product-canvas__image.is-active,
-  .product-canvas__frame > svg,
   .product-canvas__model:not([hidden]) {
     opacity: 1;
   }
@@ -168,6 +173,31 @@
     width: 100%;
     height: 100%;
     --poster-color: transparent;
+  }
+
+  .product-canvas__turn {
+    position: absolute;
+    inset-inline-end: var(--space-4);
+    inset-block-start: var(--space-3);
+    width: 3.5rem;
+    height: auto;
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3;
+    pointer-events: none;
+    stroke-linecap: square;
+    opacity: 0;
+    transition: opacity var(--duration-quick) linear;
+  }
+
+  .product-canvas__frame:has(.product-canvas__model:not([hidden])) .product-canvas__turn {
+    opacity: 1;
+  }
+
+  .product-canvas__ar-note {
+    align-self: center;
+    margin-inline-start: auto;
+    font-size: var(--text-small);
   }
 
   .product-canvas__caption {
@@ -208,10 +238,25 @@
     margin-inline-start: auto;
   }
 
-  @media (max-width: 749px) {
+  @media (max-width: 989px) {
     .product-canvas__stage {
-      aspect-ratio: 1;
-      padding: 9% 6%;
+      aspect-ratio: 4 / 3;
+      padding: 8% 6%;
+    }
+
+    .product-canvas__views {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .product-canvas__view {
+      padding: 0 var(--space-1);
+    }
+
+    .product-canvas__view--ar,
+    .product-canvas__ar-note {
+      grid-column: 1 / -1;
+      margin-inline-start: 0;
     }
   }
 {% endstylesheet %}
@@ -272,6 +317,12 @@
       };
       views.forEach((key) => add(key, labels[key]));
       if (hasModel) add('model', this.viewBar.dataset.labelModel);
+      if (hasModel && !this.supportsAR()) {
+        const note = document.createElement('p');
+        note.className = 'product-canvas__ar-note';
+        note.textContent = this.viewBar.dataset.labelArDesktop;
+        this.viewBar.append(note);
+      }
       if (hasModel && this.supportsAR()) {
         const ar = add('ar', this.viewBar.dataset.labelAr, 'product-canvas__view--ar');
         ar.removeAttribute('aria-pressed');
@@ -306,7 +357,7 @@
         if (b.dataset.view !== 'ar') b.setAttribute('aria-pressed', String(b.dataset.view === view));
       });
       const items = this.itemsForValue();
-      this.caption.textContent = this.value || '';
+      this.caption.textContent = view === 'model' ? `${this.value || ''} · ${this.viewBar.dataset.captionModel}` : this.value || '';
       if (view === 'model') return this.showModel(items.find((m) => m.type === 'model'));
       this.hideModel();
       const item = items.find((m) => m.type === 'image' && this.viewOf(m) === view) || items.find((m) => m.type === 'image');

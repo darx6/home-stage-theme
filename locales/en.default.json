@@ -66,6 +66,8 @@
     "view_model": "3D",
     "view_ar": "View in your room",
     "render_note": "3D render",
+    "view_ar_desktop": "View in your room: open this page on your phone",
+    "model_caption": "3D model, drag to turn",
     "fabric_count": {
       "one": "{{ count }} fabric",
       "other": "{{ count }} fabrics"
@@ -79,9 +81,8 @@
     "sample_added": "Sample of %s added to your cart.",
     "sample_error": "The sample couldn't be added. Please try again.",
     "view_cart": "View cart",
-    "made_to_order": "Made to order",
-    "lead_time_single": "Ships in {{ weeks }} weeks",
-    "lead_time_range": "Ships in {{ min }}–{{ max }} weeks",
+    "lead_time_single": "Made and delivered in {{ weeks }} weeks",
+    "lead_time_range": "Made and delivered in {{ min }}–{{ max }} weeks",
     "arrival_window": "Ordered today, it arrives",
     "dimensions": "Dimensions",
     "units": "Units",

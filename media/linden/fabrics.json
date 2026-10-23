@@ -10,8 +10,8 @@
  {
   "no": "02",
   "slug": "moss-boucle",
-  "name": "Moss bouclé",
-  "colour": "#697048",
+  "name": "Moss houndstooth",
+  "colour": "#6D744B",
   "texture": "wool_boucle",
   "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_diff_1k.jpg"
  },
@@ -19,7 +19,7 @@
   "no": "03",
   "slug": "ochre-velvet",
   "name": "Ochre velvet",
-  "colour": "#A6813E",
+  "colour": "#A7813E",
   "texture": "velour_velvet",
   "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/velour_velvet/velour_velvet_diff_1k.jpg"
  },
@@ -43,7 +43,7 @@
   "no": "06",
   "slug": "plum-corduroy",
   "name": "Plum corduroy",
-  "colour": "#6E3949",
+  "colour": "#6C3C4C",
   "texture": "ribbed_corduroy",
   "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ribbed_corduroy/ribbed_corduroy_diff_1k.jpg"
  }

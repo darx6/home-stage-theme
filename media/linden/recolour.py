@@ -4,7 +4,7 @@ get = lambda u: urllib.request.urlopen(urllib.request.Request(u, headers=UA), ti
 A = os.path.dirname(os.path.abspath(__file__))
 FABRICS = [
   ("01", "cobalt-wool", "Cobalt wool", "caban", "#2F4B8A"),
-  ("02", "moss-boucle", "Moss bouclé", "wool_boucle", "#6A7149"),
+  ("02", "moss-boucle", "Moss houndstooth", "wool_boucle", "#6A7149"),
   ("03", "ochre-velvet", "Ochre velvet", "velour_velvet", "#B8862B"),
   ("04", "oatmeal-linen", "Oatmeal linen", "rough_linen", "#CFC4AE"),
   ("05", "charcoal-herringbone", "Charcoal herringbone", "poly_wool_herringbone", "#3B3B3D"),
@@ -22,12 +22,16 @@ def mean_gray(img, mask=None):
     if mask:
         return float(out(img, "-colorspace", "gray", mask, "-alpha", "off", "-compose", "CopyOpacity", "-composite", "-scale", "1x1!", "-alpha", "off", "-format", "%[fx:p.r]", "info:"))
     return float(out(img, "-colorspace", "gray", "-format", "%[fx:mean]", "info:"))
-def tint(img, col, mask=None, extra=()):
+CROP = {"charcoal-herringbone": "26%x26%", "plum-corduroy": "10%x10%"}
+CONTRAST = {"charcoal-herringbone": (0.25, 1.75), "plum-corduroy": (0.4, 1.6)}
+
+
+def tint(img, col, mask=None, extra=(), lo=0.62, hi=1.38):
     # Centre the texture's lightness on 0.5, then map 0..1 to a dark..light shade of the target,
     # so the average of the result lands on the target colour and the weave/shading survives.
     m = mean_gray(img, mask)
     return [img, "-colorspace", "gray", "-evaluate", "multiply", str(0.5 / m), "-sigmoidal-contrast", "1,50%",
-            "+level-colors", f"{shade(col,0.62)},{shade(col,1.38)}", *extra]
+            "+level-colors", f"{shade(col,lo)},{shade(col,hi)}", *extra]
 src = f"{A}/Sofa_01/textures/Sofa_01_diff_2k.jpg"
 # Upholstery is the light part of the atlas, wood the dark part: soft mask by lightness.
 mask = f"{A}/build/fabric_mask.png"
@@ -44,7 +48,9 @@ for no, slug, name, tex, col in FABRICS:
     raw = f"{A}/fabrics/{tex}_diff_1k.jpg"
     if not os.path.exists(raw):
         open(raw, "wb").write(get(url))
-    run(*tint(raw, col, extra=("-resize", "800x800^", "-gravity", "center", "-extent", "800x800", "-quality", "88")), f"{A}/build/swatch_{no}_{slug}.jpg")
+    lo, hi = CONTRAST.get(slug, (0.62, 1.38))
+    run(*tint(raw, col, lo=lo, hi=hi, extra=("-gravity", "center", "-crop", CROP.get(slug, "34%x34%") + "+0+0", "+repage",
+        "-resize", "800x800^", "-extent", "800x800", "-quality", "88")), f"{A}/build/swatch_{no}_{slug}.jpg")
     manifest.append(dict(no=no, slug=slug, name=name, colour=col, texture=tex, texture_url=url))
 json.dump(manifest, open(f"{A}/build/fabrics.json", "w"), indent=1, ensure_ascii=False)
 print("ok", len(manifest))

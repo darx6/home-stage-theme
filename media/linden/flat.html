@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8">
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>html,body{margin:0;background:#fff}model-viewer{width:100vw;height:100vh;background:#fff}</style></head>
+<body><model-viewer id="mv" interaction-prompt="none" shadow-intensity="0" tone-mapping="neutral" environment-image="neutral"></model-viewer>
+<script>
+const q = new URLSearchParams(location.search), mv = document.getElementById('mv');
+mv.setAttribute('exposure', '1'); mv.setAttribute('field-of-view', '6deg');
+mv.cameraOrbit = q.get('orbit');
+mv.src = '../glb/' + q.get('m') + '.glb';
+mv.addEventListener('load', () => setTimeout(() => document.title = 'READY', 500));
+</script></body></html>

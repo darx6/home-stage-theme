@@ -11,6 +11,8 @@
   assign mw = p.metafields.homestage.width.value
   assign md = p.metafields.homestage.depth.value
   assign mh = p.metafields.homestage.height.value
+  assign drawing_front = p.metafields.homestage.drawing_front.value
+  assign drawing_side = p.metafields.homestage.drawing_side.value
 -%}
 {%- if mw and md and mh -%}
   {%- liquid
@@ -91,6 +93,25 @@
     </div>
 
     <div class="dimensions__panel" role="tabpanel" id="{{ uid }}-piece" aria-labelledby="{{ uid }}-tab-piece">
+      {%- if drawing_front and drawing_side -%}
+        <div class="dimensions__drawings dimensions__drawings--traced">
+          <figure class="dim-figure dim-figure--front" style="--grow: {{ drawing_front.aspect_ratio }};">
+            <div class="dim-figure__art">
+              <span class="dim-figure__height numerals"><span data-len="{{ h }}"></span></span>
+              {{ drawing_front | image_url: width: 1200 | image_tag: alt: drawing_front.alt, loading: 'lazy', widths: '600, 900, 1200', sizes: '(min-width: 990px) 22vw, 60vw' }}
+              <span class="dim-figure__width numerals"><span data-len="{{ w }}"></span></span>
+            </div>
+            <figcaption class="caption">{{ 'products.front_view' | t }}</figcaption>
+          </figure>
+          <figure class="dim-figure" style="--grow: {{ drawing_side.aspect_ratio }};">
+            <div class="dim-figure__art">
+              {{ drawing_side | image_url: width: 600 | image_tag: alt: drawing_side.alt, loading: 'lazy', widths: '300, 600', sizes: '(min-width: 990px) 10vw, 30vw' }}
+              <span class="dim-figure__width numerals"><span data-len="{{ d }}"></span></span>
+            </div>
+            <figcaption class="caption">{{ 'products.side_view' | t }}</figcaption>
+          </figure>
+        </div>
+      {%- else -%}
       <div class="dimensions__drawings">
         <figure>
           <svg
@@ -140,6 +161,7 @@
           <figcaption class="caption">{{ 'products.side_view' | t }}</figcaption>
         </figure>
       </div>
+      {%- endif -%}
       <p class="dimensions__note">{{ 'products.drawing_note' | t }}</p>
     </div>
 
@@ -257,6 +279,74 @@
     grid-template-columns: 2.2fr 1fr;
     gap: var(--space-5);
     align-items: end;
+  }
+
+  .dimensions__drawings--traced {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-5);
+  }
+
+  .dim-figure {
+    flex: var(--grow) 1 0;
+    min-width: 0;
+  }
+
+  .dim-figure__art {
+    position: relative;
+    padding: 0 0 var(--space-6);
+  }
+
+  .dim-figure--front .dim-figure__art {
+    padding-inline-start: var(--space-5);
+  }
+
+  .dim-figure__art img {
+    width: 100%;
+    height: auto;
+  }
+
+  .dim-figure__width,
+  .dim-figure__height {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-small);
+  }
+
+  .dim-figure__width {
+    inset-inline: 0;
+    bottom: 0;
+    height: var(--space-5);
+    border-inline: 1px solid var(--ink);
+    background: linear-gradient(var(--ink), var(--ink)) center / 100% 1px no-repeat;
+  }
+
+  .dim-figure__height {
+    top: 0;
+    bottom: var(--space-6);
+    left: 0;
+    width: var(--space-5);
+    border-block: 1px solid var(--ink);
+    background: linear-gradient(var(--ink), var(--ink)) center / 1px 100% no-repeat;
+  }
+
+  .dim-figure__width span,
+  .dim-figure__height span {
+    padding: 0 var(--space-1);
+    background: var(--gallery);
+    white-space: nowrap;
+  }
+
+  .dim-figure--front .dim-figure__width {
+    inset-inline-start: var(--space-5);
+  }
+
+  .dim-figure__height span {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding: var(--space-1) 0;
   }
 
   .dimensions__drawings figure,
