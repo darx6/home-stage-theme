@@ -1,0 +1,50 @@
+[
+ {
+  "no": "01",
+  "slug": "cobalt-wool",
+  "name": "Cobalt wool",
+  "colour": "#2F4B8B",
+  "texture": "caban",
+  "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/caban/caban_diff_1k.jpg"
+ },
+ {
+  "no": "02",
+  "slug": "moss-boucle",
+  "name": "Moss bouclé",
+  "colour": "#697048",
+  "texture": "wool_boucle",
+  "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wool_boucle/wool_boucle_diff_1k.jpg"
+ },
+ {
+  "no": "03",
+  "slug": "ochre-velvet",
+  "name": "Ochre velvet",
+  "colour": "#A6813E",
+  "texture": "velour_velvet",
+  "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/velour_velvet/velour_velvet_diff_1k.jpg"
+ },
+ {
+  "no": "04",
+  "slug": "oatmeal-linen",
+  "name": "Oatmeal linen",
+  "colour": "#CABFAC",
+  "texture": "rough_linen",
+  "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rough_linen/rough_linen_diff_1k.jpg"
+ },
+ {
+  "no": "05",
+  "slug": "charcoal-herringbone",
+  "name": "Charcoal herringbone",
+  "colour": "#3B3B3D",
+  "texture": "poly_wool_herringbone",
+  "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/poly_wool_herringbone/poly_wool_herringbone_diff_1k.jpg"
+ },
+ {
+  "no": "06",
+  "slug": "plum-corduroy",
+  "name": "Plum corduroy",
+  "colour": "#6E3949",
+  "texture": "ribbed_corduroy",
+  "texture_url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ribbed_corduroy/ribbed_corduroy_diff_1k.jpg"
+ }
+]
