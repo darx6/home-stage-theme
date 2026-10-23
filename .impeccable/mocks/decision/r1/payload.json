@@ -1,0 +1,131 @@
+{
+  "title": "HomeStage, round two: choose the visual world",
+  "question": "The roll assigned the printed furnishing cotton. Keep it, take an alternate, or re-roll. Warm and tactile, distinctive but usable, nothing like Formula.",
+  "options": [
+    {
+      "id": "assigned",
+      "kind": "assigned",
+      "label": "Printed Cloth",
+      "kicker": "THE ROLL",
+      "lineage": "mid-century screen-printed furnishing cottons",
+      "thesis": "The page is a length of printed cloth, and choosing a fabric re-prints it in that colourway.",
+      "palette": ["#3E4A2C", "#D9A43A", "#8C2F4E", "#2F4B8B", "#EFE6D2"],
+      "materials": ["screen-printed cotton", "overprinted flat inks", "selvedge edge", "pinked cut edges"],
+      "viewport": "A full-bleed printed ground of large soft shapes drawn from the sofa's camelback curve; the sofa render sits on the cloth; the selvedge strip carries nav and colourway; name, price, Add to cart and Order a sample sit on a sewn-in label patch.",
+      "risk": "Pattern can overwhelm the product if the motif is too busy; needs a disciplined two- or three-ink print.",
+      "raised": [
+        {"from": "food-fermentation-culinary-theater-pickling-brine-calendar", "raise": "Lead time is a dated band of weeks from today, each week labelled with what happens to the sofa."},
+        {"from": "signals-instruments-vu-meter-bridge", "raise": "The fabric range is one row of identical cut pieces; the chosen one lifts out of the row."},
+        {"from": "operate-c-emission-line-rail", "raise": "Selection is shown by form (the chosen piece lifts with a folded corner), never by colour alone."},
+        {"from": "design-canon-raygun-layout-desk", "raise": "One loud fragment leads: the colourway name printed large into the cloth."}
+      ],
+      "html": ".impeccable/mocks/decision/r1/assigned.html",
+      "comp": ".impeccable/mocks/decision/r1/assigned.png"
+    },
+    {
+      "id": "model-pick",
+      "kind": "pick",
+      "label": "The Designer's Sketchbook",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "interior designers' watercolour sketchbooks and sample boards",
+      "thesis": "The page is a designer's sketchbook spread for this one sofa: washed drawings, pinned swatches, notes in the margin.",
+      "palette": ["#F2EADB", "#3B5B6B", "#B6533A", "#6E7B4F", "#2A2522"],
+      "materials": ["watercolour wash", "pinned fabric", "pencil line", "tracing paper"],
+      "viewport": "An open sketchbook spread: the sofa on the left page with pencil dimension lines, fabric swatches pinned on the right with the buy panel clipped to the page.",
+      "risk": "Familiar warm-paper look, close to the cream-and-serif default; needs real hand-made washes to avoid feeling pasted on.",
+      "html": ".impeccable/mocks/decision/r1/model-pick.html",
+      "comp": ".impeccable/mocks/decision/r1/model-pick.png"
+    },
+    {
+      "id": "challenger-azulejo", "kind": "challenger", "catalogId": "architecture-places-azulejo-station-hall",
+      "label": "Azulejo Hall", "verdict": "competitive",
+      "lineage": "Portuguese tin-glazed tile halls",
+      "thesis": "The page laid in glazed tiles, cobalt on milk white, panels framed by tile borders.",
+      "palette": ["#1F3F8C", "#F4F1E8", "#D9A93A"],
+      "materials": ["tin glaze", "grout seams", "painted line"],
+      "viewport": "A tiled panel holds the sofa; tile borders frame the fabric range and price.",
+      "case": "Homeware owners recognise tile and glaze at once; loses on clarity because grout seams cross the product.",
+      "risk": "Only one blue: the fabric colours fight a cobalt world.",
+      "hero": "https://impeccable.style/worlds/cards/architecture-places-azulejo-station-hall-hero.webp"
+    },
+    {
+      "id": "challenger-ekiben", "kind": "challenger", "catalogId": "vernacular-ephemera-ekiben-wrapper-kiosk",
+      "label": "Wrapped Box Kiosk", "verdict": "competitive",
+      "lineage": "Japanese station bento wrappers",
+      "thesis": "The sofa as a wrapped box whose lid diagram honestly maps everything inside.",
+      "palette": ["#C9A877", "#2E2A26", "#C23B2A"],
+      "materials": ["kraft wrapper", "woodblock print", "paper band"],
+      "viewport": "A printed lid with a numbered contents map: frame, springs, fabric, legs, delivery.",
+      "case": "Strong on clarity (a contents map of the piece); weak on identification for furniture owners.",
+      "risk": "Reads as food packaging if the furniture facts don't lead.",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-ekiben-wrapper-kiosk-hero.webp"
+    },
+    {
+      "id": "challenger-brine", "kind": "challenger", "catalogId": "food-fermentation-culinary-theater-pickling-brine-calendar",
+      "label": "Brine Calendar", "verdict": "declined",
+      "lineage": "pickling jars by season",
+      "thesis": "Jars maturing on a seasonal shelf.",
+      "palette": ["#E8EEE4", "#D96B5A", "#8F2340", "#7E9A4A"],
+      "materials": ["jar glass", "kraft labels"],
+      "viewport": "A shelf of jars.",
+      "case": "Food world; furniture owners do not see themselves in it.",
+      "risk": "Off-category.",
+      "kept": "A dated band of weeks for the lead time.",
+      "hero": "https://impeccable.style/worlds/cards/food-fermentation-culinary-theater-pickling-brine-calendar-hero.webp"
+    },
+    {
+      "id": "challenger-vu", "kind": "challenger", "catalogId": "signals-instruments-vu-meter-bridge",
+      "label": "VU Meter Bridge", "verdict": "declined",
+      "lineage": "recording desk meters",
+      "thesis": "A row of needles reading the room.",
+      "palette": ["#EFE6CF", "#111111", "#C0322B"],
+      "materials": ["meter glass", "walnut"],
+      "viewport": "A row of meters.",
+      "case": "Instrument world; no home or fabric story.",
+      "risk": "Reads as audio gear.",
+      "kept": "Identical units in one row, the chosen one lifting.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-vu-meter-bridge-hero.webp"
+    },
+    {
+      "id": "challenger-rail", "kind": "challenger", "catalogId": "operate-c-emission-line-rail",
+      "label": "Emission Line Rail", "verdict": "declined",
+      "lineage": "spectrograph plates",
+      "thesis": "Everything hung off one calibrated rail.",
+      "palette": ["#2B2B2B", "#E8E2D6", "#F2C230"],
+      "materials": ["charcoal continuum", "hairlines"],
+      "viewport": "A rail of hairline ticks.",
+      "case": "Cold and technical; drifts back toward Formula's hairline family.",
+      "risk": "Opposite of warm and tactile.",
+      "kept": "State shown by form, not colour.",
+      "hero": "https://impeccable.style/worlds/cards/operate-c-emission-line-rail-hero.webp"
+    },
+    {
+      "id": "challenger-raygun", "kind": "challenger", "catalogId": "design-canon-raygun-layout-desk",
+      "label": "Raygun Desk", "verdict": "declined",
+      "lineage": "90s surf-music magazine layouts",
+      "thesis": "Colliding type you feel before you read.",
+      "palette": ["#EDE6D6", "#111111", "#E04A2A"],
+      "materials": ["overprint", "battered grotesks"],
+      "viewport": "Colliding columns over a photo.",
+      "case": "Unusable as a shop page; not distinctive-but-usable.",
+      "risk": "Shoppers cannot find price or action.",
+      "kept": "One loud fragment leads the eye.",
+      "hero": "https://impeccable.style/worlds/cards/design-canon-raygun-layout-desk-hero.webp"
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code"},
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "The category standard",
+    "thesis": "The furniture product page every shopper expects, done impeccably.",
+    "palette": ["#FFFFFF", "#1A1A1A", "#6B6B6B"],
+    "materials": ["clean grid", "large product photography"],
+    "viewport": "Gallery left; name, price, round swatches and Add to cart right.",
+    "risk": "Indistinguishable from every furniture store.",
+    "html": ".impeccable/mocks/decision/r1/canon.html",
+    "comp": ".impeccable/mocks/decision/r1/canon.png"
+  },
+  "steer": true
+}

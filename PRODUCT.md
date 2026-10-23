@@ -37,6 +37,8 @@ Crafted by hand, not templated or AI-generated. The upgrade sections are self-co
 - Name: HomeStage (fictional). Clearly labelled as a concept store; it must never imply it is a real brand or a paid client.
 - No AI-generated design or imagery.
 - Visual direction is a baseline the studio's designer will refine.
+- Must not resemble Formula, the studio's supplement theme (`../first-theme`): no heavy condensed uppercase grotesk display, no ink-on-white hairline rules and spec grids, no numbered label grammar. The first HomeStage direction (op-art gallery, Oct 2026) was rejected for drifting into that family.
+- Preferred feel (user, Oct 2026): warm and tactile, distinctive but usable; a shopper understands the page at once.
 
 ## Evidence on Hand
 - None yet for HomeStage: no products, photos, 3D models or copy exist.
